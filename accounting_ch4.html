@@ -210,6 +210,79 @@
         .incorrect {
             color: #e74c3c;
         }
+        .view-toggle {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .view-toggle button {
+            padding: 10px 20px;
+            margin: 0 5px;
+            background-color: #e0e0e0;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            border-radius: 5px;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body.dark-mode .view-toggle button {
+            background-color: #2c3e50;
+            color: white;
+        }
+        .view-toggle button:hover {
+            background-color: #2980b9;
+            color: white;
+        }
+        .view-toggle button.active {
+            background-color: #3498db;
+            color: white;
+        }
+        .flashcard {
+            perspective: 1000px;
+            margin-bottom: 30px;
+            cursor: pointer;
+        }
+        .flashcard .inner {
+            position: relative;
+            width: 100%;
+            text-align: left;
+            transition: transform 0.6s ease-in-out;
+            transform-style: preserve-3d;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .flashcard.flipped .inner {
+            transform: rotateY(180deg);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+        body.dark-mode .flashcard .inner {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        body.dark-mode .flashcard.flipped .inner {
+            box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+        }
+        .flashcard .front, .flashcard .back {
+            position: absolute;
+            width: 100%;
+            min-height: 200px;
+            backface-visibility: hidden;
+            padding: 15px;
+            box-sizing: border-box;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow: auto;
+        }
+        body.dark-mode .flashcard .front, body.dark-mode .flashcard .back {
+            background-color: #2a3b4c;
+            border-color: #555;
+            color: #e0e0e0;
+        }
+        .flashcard .back {
+            transform: rotateY(180deg);
+        }
+        .option {
+            margin: 5px 0;
+        }
         @media (max-width: 600px) {
             body {
                 margin: 20px;
@@ -237,6 +310,15 @@
                 top: 10px;
                 right: 10px;
                 padding: 8px 16px;
+            }
+            .view-toggle {
+                flex-direction: column;
+            }
+            .view-toggle button {
+                margin: 5px 0;
+            }
+            .flashcard .inner {
+                min-height: 300px; /* Ensure minimum height on small screens */
             }
         }
     </style>
@@ -276,194 +358,517 @@
 
     <div id="multiple-choice" class="tab-content">
         <h2>Multiple Choice Questions</h2>
-        <h3>1. LO 4.1 Which of the following is any reporting period shorter than a full year (fiscal or calendar) and can encompass monthly, quarterly, or half-year statements?</h3>
-        <div class="mc-option"><input type="radio" name="q1" value="A"> A) fiscal year</div>
-        <div class="mc-option"><input type="radio" name="q1" value="B"> <strong>B) interim period</strong></div>
-        <div class="mc-option"><input type="radio" name="q1" value="C"> C) calendar year</div>
-        <div class="mc-option"><input type="radio" name="q1" value="D"> D) fixed year</div>
-        <p><strong>Answer: B) interim period</strong></p>
-        <p class="example">Real-world example: A company like Walmart prepares quarterly financial reports for investors, covering three months, which is an interim period.</p>
-        <p class="mc-feedback" id="feedback-q1"></p>
+        <div class="view-toggle">
+            <button id="quiz-view" class="active">Quiz View</button>
+            <button id="flashcard-view">Flashcard View</button>
+        </div>
+        <div id="quiz-content" style="display: block;">
+            <h3>1. LO 4.1 Which of the following is any reporting period shorter than a full year (fiscal or calendar) and can encompass monthly, quarterly, or half-year statements?</h3>
+            <div class="mc-option"><input type="radio" name="q1" value="A"> A) fiscal year</div>
+            <div class="mc-option"><input type="radio" name="q1" value="B"> <strong>B) interim period</strong></div>
+            <div class="mc-option"><input type="radio" name="q1" value="C"> C) calendar year</div>
+            <div class="mc-option"><input type="radio" name="q1" value="D"> D) fixed year</div>
+            <p><strong>Answer: B) interim period</strong></p>
+            <p class="example">Real-world example: A company like Walmart prepares quarterly financial reports for investors, covering three months, which is an interim period.</p>
+            <p class="mc-feedback" id="feedback-q1"></p>
 
-        <h3>2. LO 4.1 Which of the following is the federal, independent agency that provides oversight of public companies to maintain fair representation of company financial activities for investors to make informed decisions?</h3>
-        <div class="mc-option"><input type="radio" name="q2" value="A"> A) IRS (Internal Revenue Service)</div>
-        <div class="mc-option"><input type="radio" name="q2" value="B"> <strong>B) SEC (Securities and Exchange Commission)</strong></div>
-        <div class="mc-option"><input type="radio" name="q2" value="C"> C) FASB (Financial Accounting Standards Board)</div>
-        <div class="mc-option"><input type="radio" name="q2" value="D"> D) FDIC (Federal Deposit Insurance Corporation)</div>
-        <p><strong>Answer: B) SEC (Securities and Exchange Commission)</strong></p>
-        <p class="example">Real-world example: The SEC reviews Tesla’s financial statements to ensure they are accurate for shareholders.</p>
-        <p class="mc-feedback" id="feedback-q2"></p>
+            <h3>2. LO 4.1 Which of the following is the federal, independent agency that provides oversight of public companies to maintain fair representation of company financial activities for investors to make informed decisions?</h3>
+            <div class="mc-option"><input type="radio" name="q2" value="A"> A) IRS (Internal Revenue Service)</div>
+            <div class="mc-option"><input type="radio" name="q2" value="B"> <strong>B) SEC (Securities and Exchange Commission)</strong></div>
+            <div class="mc-option"><input type="radio" name="q2" value="C"> C) FASB (Financial Accounting Standards Board)</div>
+            <div class="mc-option"><input type="radio" name="q2" value="D"> D) FDIC (Federal Deposit Insurance Corporation)</div>
+            <p><strong>Answer: B) SEC (Securities and Exchange Commission)</strong></p>
+            <p class="example">Real-world example: The SEC reviews Tesla’s financial statements to ensure they are accurate for shareholders.</p>
+            <p class="mc-feedback" id="feedback-q2"></p>
 
-        <h3>3. LO 4.1 Revenues and expenses must be recorded in the accounting period in which they were earned or incurred, no matter when cash receipts or outlays occur under which of the following accounting methods?</h3>
-        <div class="mc-option"><input type="radio" name="q3" value="A"> <strong>A) accrual basis accounting</strong></div>
-        <div class="mc-option"><input type="radio" name="q3" value="B"> B) cash basis accounting</div>
-        <div class="mc-option"><input type="radio" name="q3" value="C"> C) tax basis accounting</div>
-        <div class="mc-option"><input type="radio" name="q3" value="D"> D) revenue basis accounting</div>
-        <p><strong>Answer: A) accrual basis accounting</strong></p>
-        <p class="example">Real-world example: A landscaping company records revenue when it mows a lawn in December, even if the client pays in January.</p>
-        <p class="mc-feedback" id="feedback-q3"></p>
+            <h3>3. LO 4.1 Revenues and expenses must be recorded in the accounting period in which they were earned or incurred, no matter when cash receipts or outlays occur under which of the following accounting methods?</h3>
+            <div class="mc-option"><input type="radio" name="q3" value="A"> <strong>A) accrual basis accounting</strong></div>
+            <div class="mc-option"><input type="radio" name="q3" value="B"> B) cash basis accounting</div>
+            <div class="mc-option"><input type="radio" name="q3" value="C"> C) tax basis accounting</div>
+            <div class="mc-option"><input type="radio" name="q3" value="D"> D) revenue basis accounting</div>
+            <p><strong>Answer: A) accrual basis accounting</strong></p>
+            <p class="example">Real-world example: A landscaping company records revenue when it mows a lawn in December, even if the client pays in January.</p>
+            <p class="mc-feedback" id="feedback-q3"></p>
 
-        <h3>4. LO 4.1 Which of the following breaks down company financial information into specific time spans, and can cover a month, quarter, half-year, or full year?</h3>
-        <div class="mc-option"><input type="radio" name="q4" value="A"> <strong>A) accounting period</strong></div>
-        <div class="mc-option"><input type="radio" name="q4" value="B"> B) yearly period</div>
-        <div class="mc-option"><input type="radio" name="q4" value="C"> C) monthly period</div>
-        <div class="mc-option"><input type="radio" name="q4" value="D"> D) fiscal period</div>
-        <p><strong>Answer: A) accounting period</strong></p>
-        <p class="example">Real-world example: A small bakery tracks its sales and expenses monthly to see how it’s doing each period.</p>
-        <p class="mc-feedback" id="feedback-q4"></p>
+            <h3>4. LO 4.1 Which of the following breaks down company financial information into specific time spans, and can cover a month, quarter, half-year, or full year?</h3>
+            <div class="mc-option"><input type="radio" name="q4" value="A"> <strong>A) accounting period</strong></div>
+            <div class="mc-option"><input type="radio" name="q4" value="B"> B) yearly period</div>
+            <div class="mc-option"><input type="radio" name="q4" value="C"> C) monthly period</div>
+            <div class="mc-option"><input type="radio" name="q4" value="D"> D) fiscal period</div>
+            <p><strong>Answer: A) accounting period</strong></p>
+            <p class="example">Real-world example: A small bakery tracks its sales and expenses monthly to see how it’s doing each period.</p>
+            <p class="mc-feedback" id="feedback-q4"></p>
 
-        <h3>5. LO 4.1 Which of the following is a twelve-month reporting cycle that can begin in any month, except January 1, and records financial data for that twelve-month consecutive period?</h3>
-        <div class="mc-option"><input type="radio" name="q5" value="A"> A) fixed year</div>
-        <div class="mc-option"><input type="radio" name="q5" value="B"> B) interim period</div>
-        <div class="mc-option"><input type="radio" name="q5" value="C"> C) calendar year</div>
-        <div class="mc-option"><input type="radio" name="q5" value="D"> <strong>D) fiscal year</strong></div>
-        <p><strong>Answer: D) fiscal year</strong></p>
-        <p class="example">Real-world example: Apple’s fiscal year runs from October to September, covering 12 months for its financial reports.</p>
-        <p class="mc-feedback" id="feedback-q5"></p>
+            <h3>5. LO 4.1 Which of the following is a twelve-month reporting cycle that can begin in any month, except January 1, and records financial data for that twelve-month consecutive period?</h3>
+            <div class="mc-option"><input type="radio" name="q5" value="A"> A) fixed year</div>
+            <div class="mc-option"><input type="radio" name="q5" value="B"> B) interim period</div>
+            <div class="mc-option"><input type="radio" name="q5" value="C"> C) calendar year</div>
+            <div class="mc-option"><input type="radio" name="q5" value="D"> <strong>D) fiscal year</strong></div>
+            <p><strong>Answer: D) fiscal year</strong></p>
+            <p class="example">Real-world example: Apple’s fiscal year runs from October to September, covering 12 months for its financial reports.</p>
+            <p class="mc-feedback" id="feedback-q5"></p>
 
-        <h3>6. LO 4.2 Which type of adjustment occurs when cash is either collected or paid, but the related income or expense is not reportable in the current period?</h3>
-        <div class="mc-option"><input type="radio" name="q6" value="A"> A) accrual</div>
-        <div class="mc-option"><input type="radio" name="q6" value="B"> <strong>B) deferral</strong></div>
-        <div class="mc-option"><input type="radio" name="q6" value="C"> C) estimate</div>
-        <div class="mc-option"><input type="radio" name="q6" value="D"> D) cull</div>
-        <p><strong>Answer: B) deferral</strong></p>
-        <p class="example">Real-world example: A gym collects a yearly membership fee upfront but records the revenue monthly as the service is provided.</p>
-        <p class="mc-feedback" id="feedback-q6"></p>
+            <h3>6. LO 4.2 Which type of adjustment occurs when cash is either collected or paid, but the related income or expense is not reportable in the current period?</h3>
+            <div class="mc-option"><input type="radio" name="q6" value="A"> A) accrual</div>
+            <div class="mc-option"><input type="radio" name="q6" value="B"> <strong>B) deferral</strong></div>
+            <div class="mc-option"><input type="radio" name="q6" value="C"> C) estimate</div>
+            <div class="mc-option"><input type="radio" name="q6" value="D"> D) cull</div>
+            <p><strong>Answer: B) deferral</strong></p>
+            <p class="example">Real-world example: A gym collects a yearly membership fee upfront but records the revenue monthly as the service is provided.</p>
+            <p class="mc-feedback" id="feedback-q6"></p>
 
-        <h3>7. LO 4.2 Which type of adjustment occurs when cash is not collected or paid, but the related income or expense is reportable in the current period?</h3>
-        <div class="mc-option"><input type="radio" name="q7" value="A"> <strong>A) accrual</strong></div>
-        <div class="mc-option"><input type="radio" name="q7" value="B"> B) deferral</div>
-        <div class="mc-option"><input type="radio" name="q7" value="C"> C) estimate</div>
-        <div class="mc-option"><input type="radio" name="q7" value="D"> D) cull</div>
-        <p><strong>Answer: A) accrual</strong></p>
-        <p class="example">Real-world example: A consulting firm records revenue for work done in December, even though the client will pay in January.</p>
-        <p class="mc-feedback" id="feedback-q7"></p>
+            <h3>7. LO 4.2 Which type of adjustment occurs when cash is not collected or paid, but the related income or expense is reportable in the current period?</h3>
+            <div class="mc-option"><input type="radio" name="q7" value="A"> <strong>A) accrual</strong></div>
+            <div class="mc-option"><input type="radio" name="q7" value="B"> B) deferral</div>
+            <div class="mc-option"><input type="radio" name="q7" value="C"> C) estimate</div>
+            <div class="mc-option"><input type="radio" name="q7" value="D"> D) cull</div>
+            <p><strong>Answer: A) accrual</strong></p>
+            <p class="example">Real-world example: A consulting firm records revenue for work done in December, even though the client will pay in January.</p>
+            <p class="mc-feedback" id="feedback-q7"></p>
 
-        <h3>8. LO 4.2 If an adjustment includes an entry to a payable or receivable account, which type of adjustment is it?</h3>
-        <div class="mc-option"><input type="radio" name="q8" value="A"> <strong>A) accrual</strong></div>
-        <div class="mc-option"><input type="radio" name="q8" value="B"> B) deferral</div>
-        <div class="mc-option"><input type="radio" name="q8" value="C"> C) estimate</div>
-        <div class="mc-option"><input type="radio" name="q8" value="D"> D) cull</div>
-        <p><strong>Answer: A) accrual</strong></p>
-        <p class="example">Real-world example: A company records salaries payable for employees’ work in December, to be paid in January.</p>
-        <p class="mc-feedback" id="feedback-q8"></p>
+            <h3>8. LO 4.2 If an adjustment includes an entry to a payable or receivable account, which type of adjustment is it?</h3>
+            <div class="mc-option"><input type="radio" name="q8" value="A"> <strong>A) accrual</strong></div>
+            <div class="mc-option"><input type="radio" name="q8" value="B"> B) deferral</div>
+            <div class="mc-option"><input type="radio" name="q8" value="C"> C) estimate</div>
+            <div class="mc-option"><input type="radio" name="q8" value="D"> D) cull</div>
+            <p><strong>Answer: A) accrual</strong></p>
+            <p class="example">Real-world example: A company records salaries payable for employees’ work in December, to be paid in January.</p>
+            <p class="mc-feedback" id="feedback-q8"></p>
 
-        <h3>9. LO 4.2 If an adjustment includes an entry to Accumulated Depreciation, which type of adjustment is it?</h3>
-        <div class="mc-option"><input type="radio" name="q9" value="A"> A) accrual</div>
-        <div class="mc-option"><input type="radio" name="q9" value="B"> B) deferral</div>
-        <div class="mc-option"><input type="radio" name="q9" value="C"> <strong>C) estimate</strong></div>
-        <div class="mc-option"><input type="radio" name="q9" value="D"> D) cull</div>
-        <p><strong>Answer: C) estimate</strong></p>
-        <p class="example">Real-world example: A delivery company records depreciation for its trucks, estimating their value loss over time.</p>
-        <p class="mc-feedback" id="feedback-q9"></p>
+            <h3>9. LO 4.2 If an adjustment includes an entry to Accumulated Depreciation, which type of adjustment is it?</h3>
+            <div class="mc-option"><input type="radio" name="q9" value="A"> A) accrual</div>
+            <div class="mc-option"><input type="radio" name="q9" value="B"> B) deferral</div>
+            <div class="mc-option"><input type="radio" name="q9" value="C"> <strong>C) estimate</strong></div>
+            <div class="mc-option"><input type="radio" name="q9" value="D"> D) cull</div>
+            <p><strong>Answer: C) estimate</strong></p>
+            <p class="example">Real-world example: A delivery company records depreciation for its trucks, estimating their value loss over time.</p>
+            <p class="mc-feedback" id="feedback-q9"></p>
 
-        <h3>10. LO 4.2 Rent collected in advance is an example of which of the following?</h3>
-        <div class="mc-option"><input type="radio" name="q10" value="A"> A) accrued expense</div>
-        <div class="mc-option"><input type="radio" name="q10" value="B"> B) accrued revenue</div>
-        <div class="mc-option"><input type="radio" name="q10" value="C"> C) deferred expense (prepaid expense)</div>
-        <div class="mc-option"><input type="radio" name="q10" value="D"> <strong>D) deferred revenue (unearned revenue)</strong></div>
-        <p><strong>Answer: D) deferred revenue (unearned revenue)</strong></p>
-        <p class="example">Real-world example: A landlord collects six months’ rent upfront but recognizes it as revenue each month as the tenant uses the property.</p>
-        <p class="mc-feedback" id="feedback-q10"></p>
+            <h3>10. LO 4.2 Rent collected in advance is an example of which of the following?</h3>
+            <div class="mc-option"><input type="radio" name="q10" value="A"> A) accrued expense</div>
+            <div class="mc-option"><input type="radio" name="q10" value="B"> B) accrued revenue</div>
+            <div class="mc-option"><input type="radio" name="q10" value="C"> C) deferred expense (prepaid expense)</div>
+            <div class="mc-option"><input type="radio" name="q10" value="D"> <strong>D) deferred revenue (unearned revenue)</strong></div>
+            <p><strong>Answer: D) deferred revenue (unearned revenue)</strong></p>
+            <p class="example">Real-world example: A landlord collects six months’ rent upfront but recognizes it as revenue each month as the tenant uses the property.</p>
+            <p class="mc-feedback" id="feedback-q10"></p>
 
-        <h3>11. LO 4.2 Rent paid in advance is an example of which of the following?</h3>
-        <div class="mc-option"><input type="radio" name="q11" value="A"> A) accrued expense</div>
-        <div class="mc-option"><input type="radio" name="q11" value="B"> B) accrued revenue</div>
-        <div class="mc-option"><input type="radio" name="q11" value="C"> <strong>C) deferred expense (prepaid expense)</strong></div>
-        <div class="mc-option"><input type="radio" name="q11" value="D"> D) deferred revenue (unearned revenue)</div>
-        <p><strong>Answer: C) deferred expense (prepaid expense)</strong></p>
-        <p class="example">Real-world example: A business pays a year’s rent in advance and expenses it monthly as the space is used.</p>
-        <p class="mc-feedback" id="feedback-q11"></p>
+            <h3>11. LO 4.2 Rent paid in advance is an example of which of the following?</h3>
+            <div class="mc-option"><input type="radio" name="q11" value="A"> A) accrued expense</div>
+            <div class="mc-option"><input type="radio" name="q11" value="B"> B) accrued revenue</div>
+            <div class="mc-option"><input type="radio" name="q11" value="C"> <strong>C) deferred expense (prepaid expense)</strong></div>
+            <div class="mc-option"><input type="radio" name="q11" value="D"> D) deferred revenue (unearned revenue)</div>
+            <p><strong>Answer: C) deferred expense (prepaid expense)</strong></p>
+            <p class="example">Real-world example: A business pays a year’s rent in advance and expenses it monthly as the space is used.</p>
+            <p class="mc-feedback" id="feedback-q11"></p>
 
-        <h3>12. LO 4.2 Salaries owed but not yet paid is an example of which of the following?</h3>
-        <div class="mc-option"><input type="radio" name="q12" value="A"> <strong>A) accrued expense</strong></div>
-        <div class="mc-option"><input type="radio" name="q12" value="B"> B) accrued revenue</div>
-        <div class="mc-option"><input type="radio" name="q12" value="C"> C) deferred expense (prepaid expense)</div>
-        <div class="mc-option"><input type="radio" name="q12" value="D"> D) deferred revenue (unearned revenue)</div>
-        <p><strong>Answer: A) accrued expense</strong></p>
-        <p class="example">Real-world example: A store owes its employees for the last week of December but will pay them in January.</p>
-        <p class="mc-feedback" id="feedback-q12"></p>
+            <h3>12. LO 4.2 Salaries owed but not yet paid is an example of which of the following?</h3>
+            <div class="mc-option"><input type="radio" name="q12" value="A"> <strong>A) accrued expense</strong></div>
+            <div class="mc-option"><input type="radio" name="q12" value="B"> B) accrued revenue</div>
+            <div class="mc-option"><input type="radio" name="q12" value="C"> C) deferred expense (prepaid expense)</div>
+            <div class="mc-option"><input type="radio" name="q12" value="D"> D) deferred revenue (unearned revenue)</div>
+            <p><strong>Answer: A) accrued expense</strong></p>
+            <p class="example">Real-world example: A store owes its employees for the last week of December but will pay them in January.</p>
+            <p class="mc-feedback" id="feedback-q12"></p>
 
-        <h3>13. LO 4.2 Revenue earned but not yet collected is an example of which of the following?</h3>
-        <div class="mc-option"><input type="radio" name="q13" value="A"> A) accrued expense</div>
-        <div class="mc-option"><input type="radio" name="q13" value="B"> <strong>B) accrued revenue</strong></div>
-        <div class="mc-option"><input type="radio" name="q13" value="C"> C) deferred expense (prepaid expense)</div>
-        <div class="mc-option"><input type="radio" name="q13" value="D"> D) deferred revenue (unearned revenue)</div>
-        <p><strong>Answer: B) accrued revenue</strong></p>
-        <p class="example">Real-world example: A graphic designer completes a project in December but waits for the client’s payment in January.</p>
-        <p class="mc-feedback" id="feedback-q13"></p>
+            <h3>13. LO 4.2 Revenue earned but not yet collected is an example of which of the following?</h3>
+            <div class="mc-option"><input type="radio" name="q13" value="A"> A) accrued expense</div>
+            <div class="mc-option"><input type="radio" name="q13" value="B"> <strong>B) accrued revenue</strong></div>
+            <div class="mc-option"><input type="radio" name="q13" value="C"> C) deferred expense (prepaid expense)</div>
+            <div class="mc-option"><input type="radio" name="q13" value="D"> D) deferred revenue (unearned revenue)</div>
+            <p><strong>Answer: B) accrued revenue</strong></p>
+            <p class="example">Real-world example: A graphic designer completes a project in December but waits for the client’s payment in January.</p>
+            <p class="mc-feedback" id="feedback-q13"></p>
 
-        <h3>14. LO 4.3 What adjusting journal entry is needed to record depreciation expense for the period?</h3>
-        <div class="mc-option"><input type="radio" name="q14" value="A"> A) a debit to Depreciation Expense; a credit to Cash</div>
-        <div class="mc-option"><input type="radio" name="q14" value="B"> B) a debit to Accumulated Depreciation; a credit to Depreciation Expense</div>
-        <div class="mc-option"><input type="radio" name="q14" value="C"> <strong>C) a debit to Depreciation Expense; a credit to Accumulated Depreciation</strong></div>
-        <div class="mc-option"><input type="radio" name="q14" value="D"> D) a debit to Accumulated Depreciation; a credit to Cash</div>
-        <p><strong>Answer: C) a debit to Depreciation Expense; a credit to Accumulated Depreciation</strong></p>
-        <p class="example">Real-world example: A restaurant records monthly depreciation for its kitchen equipment to reflect wear and tear.</p>
-        <p class="mc-feedback" id="feedback-q14"></p>
+            <h3>14. LO 4.3 What adjusting journal entry is needed to record depreciation expense for the period?</h3>
+            <div class="mc-option"><input type="radio" name="q14" value="A"> A) a debit to Depreciation Expense; a credit to Cash</div>
+            <div class="mc-option"><input type="radio" name="q14" value="B"> B) a debit to Accumulated Depreciation; a credit to Depreciation Expense</div>
+            <div class="mc-option"><input type="radio" name="q14" value="C"> <strong>C) a debit to Depreciation Expense; a credit to Accumulated Depreciation</strong></div>
+            <div class="mc-option"><input type="radio" name="q14" value="D"> D) a debit to Accumulated Depreciation; a credit to Cash</div>
+            <p><strong>Answer: C) a debit to Depreciation Expense; a credit to Accumulated Depreciation</strong></p>
+            <p class="example">Real-world example: A restaurant records monthly depreciation for its kitchen equipment to reflect wear and tear.</p>
+            <p class="mc-feedback" id="feedback-q14"></p>
 
-        <h3>15. LO 4.3 Which of these transactions requires an adjusting entry (debit) to Unearned Revenue?</h3>
-        <div class="mc-option"><input type="radio" name="q15" value="A"> A) revenue earned but not yet collected</div>
-        <div class="mc-option"><input type="radio" name="q15" value="B"> B) revenue collected but not yet earned</div>
-        <div class="mc-option"><input type="radio" name="q15" value="C"> C) revenue earned before being collected, when it is later collected</div>
-        <div class="mc-option"><input type="radio" name="q15" value="D"> <strong>D) revenue collected before being earned, when it is later earned</strong></div>
-        <p><strong>Answer: D) revenue collected before being earned, when it is later earned</strong></p>
-        <p class="example">Real-world example: A magazine subscription service collects payment upfront and debits Unearned Revenue when issues are delivered monthly.</p>
-        <p class="mc-feedback" id="feedback-q15"></p>
+            <h3>15. LO 4.3 Which of these transactions requires an adjusting entry (debit) to Unearned Revenue?</h3>
+            <div class="mc-option"><input type="radio" name="q15" value="A"> A) revenue earned but not yet collected</div>
+            <div class="mc-option"><input type="radio" name="q15" value="B"> B) revenue collected but not yet earned</div>
+            <div class="mc-option"><input type="radio" name="q15" value="C"> C) revenue earned before being collected, when it is later collected</div>
+            <div class="mc-option"><input type="radio" name="q15" value="D"> <strong>D) revenue collected before being earned, when it is later earned</strong></div>
+            <p><strong>Answer: D) revenue collected before being earned, when it is later earned</strong></p>
+            <p class="example">Real-world example: A magazine subscription service collects payment upfront and debits Unearned Revenue when issues are delivered monthly.</p>
+            <p class="mc-feedback" id="feedback-q15"></p>
 
-        <h3>16. LO 4.4 What critical purpose does the adjusted trial balance serve?</h3>
-        <div class="mc-option"><input type="radio" name="q16" value="A"> A) It proves that transactions have been posted correctly</div>
-        <div class="mc-option"><input type="radio" name="q16" value="B"> <strong>B) It is the source document from which to prepare the financial statements</strong></div>
-        <div class="mc-option"><input type="radio" name="q16" value="C"> C) It shows the beginning balances of every account, to be used to start the new year’s records</div>
-        <div class="mc-option"><input type="radio" name="q16" value="D"> D) It proves that all journal entries have been made correctly</div>
-        <p><strong>Answer: B) It is the source document from which to prepare the financial statements</strong></p>
-        <p class="example">Real-world example: A retailer uses the adjusted trial balance to create its income statement showing sales and expenses.</p>
-        <p class="mc-feedback" id="feedback-q16"></p>
+            <h3>16. LO 4.4 What critical purpose does the adjusted trial balance serve?</h3>
+            <div class="mc-option"><input type="radio" name="q16" value="A"> A) It proves that transactions have been posted correctly</div>
+            <div class="mc-option"><input type="radio" name="q16" value="B"> <strong>B) It is the source document from which to prepare the financial statements</strong></div>
+            <div class="mc-option"><input type="radio" name="q16" value="C"> C) It shows the beginning balances of every account, to be used to start the new year’s records</div>
+            <div class="mc-option"><input type="radio" name="q16" value="D"> D) It proves that all journal entries have been made correctly</div>
+            <p><strong>Answer: B) It is the source document from which to prepare the financial statements</strong></p>
+            <p class="example">Real-world example: A retailer uses the adjusted trial balance to create its income statement showing sales and expenses.</p>
+            <p class="mc-feedback" id="feedback-q16"></p>
 
-        <h3>17. LO 4.4 Which of the following accounts’ balance would be a different number on the Balance Sheet than it is on the adjusted trial balance?</h3>
-        <div class="mc-option"><input type="radio" name="q17" value="A"> A) accumulated depreciation</div>
-        <div class="mc-option"><input type="radio" name="q17" value="B"> B) unearned service revenue</div>
-        <div class="mc-option"><input type="radio" name="q17" value="C"> <strong>C) retained earnings</strong></div>
-        <div class="mc-option"><input type="radio" name="q17" value="D"> D) dividends</div>
-        <p><strong>Answer: C) retained earnings</strong></p>
-        <p class="example">Real-world example: A company’s retained earnings on the balance sheet may reflect post-closing adjustments, differing from the trial balance.</p>
-        <p class="mc-feedback" id="feedback-q17"></p>
+            <h3>17. LO 4.4 Which of the following accounts’ balance would be a different number on the Balance Sheet than it is on the adjusted trial balance?</h3>
+            <div class="mc-option"><input type="radio" name="q17" value="A"> A) accumulated depreciation</div>
+            <div class="mc-option"><input type="radio" name="q17" value="B"> B) unearned service revenue</div>
+            <div class="mc-option"><input type="radio" name="q17" value="C"> <strong>C) retained earnings</strong></div>
+            <div class="mc-option"><input type="radio" name="q17" value="D"> D) dividends</div>
+            <p><strong>Answer: C) retained earnings</strong></p>
+            <p class="example">Real-world example: A company’s retained earnings on the balance sheet may reflect post-closing adjustments, differing from the trial balance.</p>
+            <p class="mc-feedback" id="feedback-q17"></p>
 
-        <h3>18. LO 4.5 On which financial statement would the Supplies account appear?</h3>
-        <div class="mc-option"><input type="radio" name="q18" value="A"> <strong>A) Balance Sheet</strong></div>
-        <div class="mc-option"><input type="radio" name="q18" value="B"> B) Income Statement</div>
-        <div class="mc-option"><input type="radio" name="q18" value="C"> C) Retained Earnings Statement</div>
-        <div class="mc-option"><input type="radio" name="q18" value="D"> D) Statement of Cash Flows</div>
-        <p><strong>Answer: A) Balance Sheet</strong></p>
-        <p class="example">Real-world example: A print shop lists its paper and ink supplies as assets on its balance sheet.</p>
-        <p class="mc-feedback" id="feedback-q18"></p>
+            <h3>18. LO 4.5 On which financial statement would the Supplies account appear?</h3>
+            <div class="mc-option"><input type="radio" name="q18" value="A"> <strong>A) Balance Sheet</strong></div>
+            <div class="mc-option"><input type="radio" name="q18" value="B"> B) Income Statement</div>
+            <div class="mc-option"><input type="radio" name="q18" value="C"> C) Retained Earnings Statement</div>
+            <div class="mc-option"><input type="radio" name="q18" value="D"> D) Statement of Cash Flows</div>
+            <p><strong>Answer: A) Balance Sheet</strong></p>
+            <p class="example">Real-world example: A print shop lists its paper and ink supplies as assets on its balance sheet.</p>
+            <p class="mc-feedback" id="feedback-q18"></p>
 
-        <h3>19. LO 4.5 On which financial statement would the Dividends account appear?</h3>
-        <div class="mc-option"><input type="radio" name="q19" value="A"> A) Balance Sheet</div>
-        <div class="mc-option"><input type="radio" name="q19" value="B"> B) Income Statement</div>
-        <div class="mc-option"><input type="radio" name="q19" value="C"> <strong>C) Retained Earnings Statement</strong></div>
-        <div class="mc-option"><input type="radio" name="q19" value="D"> D) Statement of Cash Flows</div>
-        <p><strong>Answer: C) Retained Earnings Statement</strong></p>
-        <p class="example">Real-world example: A corporation reports dividends paid to shareholders in its retained earnings statement.</p>
-        <p class="mc-feedback" id="feedback-q19"></p>
+            <h3>19. LO 4.5 On which financial statement would the Dividends account appear?</h3>
+            <div class="mc-option"><input type="radio" name="q19" value="A"> A) Balance Sheet</div>
+            <div class="mc-option"><input type="radio" name="q19" value="B"> B) Income Statement</div>
+            <div class="mc-option"><input type="radio" name="q19" value="C"> <strong>C) Retained Earnings Statement</strong></div>
+            <div class="mc-option"><input type="radio" name="q19" value="D"> D) Statement of Cash Flows</div>
+            <p><strong>Answer: C) Retained Earnings Statement</strong></p>
+            <p class="example">Real-world example: A corporation reports dividends paid to shareholders in its retained earnings statement.</p>
+            <p class="mc-feedback" id="feedback-q19"></p>
 
-        <h3>20. LO 4.5 On which financial statement would the Accumulated Depreciation account appear?</h3>
-        <div class="mc-option"><input type="radio" name="q20" value="A"> <strong>A) Balance Sheet</strong></div>
-        <div class="mc-option"><input type="radio" name="q20" value="B"> B) Income Statement</div>
-        <div class="mc-option"><input type="radio" name="q20" value="C"> C) Retained Earnings Statement</div>
-        <div class="mc-option"><input type="radio" name="q20" value="D"> D) Statement of Cash Flows</div>
-        <p><strong>Answer: A) Balance Sheet</strong></p>
-        <p class="example">Real-world example: A trucking company shows accumulated depreciation for its fleet on the balance sheet to reduce asset value.</p>
-        <p class="mc-feedback" id="feedback-q20"></p>
+            <h3>20. LO 4.5 On which financial statement would the Accumulated Depreciation account appear?</h3>
+            <div class="mc-option"><input type="radio" name="q20" value="A"> <strong>A) Balance Sheet</strong></div>
+            <div class="mc-option"><input type="radio" name="q20" value="B"> B) Income Statement</div>
+            <div class="mc-option"><input type="radio" name="q20" value="C"> C) Retained Earnings Statement</div>
+            <div class="mc-option"><input type="radio" name="q20" value="D"> D) Statement of Cash Flows</div>
+            <p><strong>Answer: A) Balance Sheet</strong></p>
+            <p class="example">Real-world example: A trucking company shows accumulated depreciation for its fleet on the balance sheet to reduce asset value.</p>
+            <p class="mc-feedback" id="feedback-q20"></p>
 
-        <h3>21. LO 4.5 On which two financial statements would the Retained Earnings account appear?</h3>
-        <div class="mc-option"><input type="radio" name="q21" value="A"> <strong>A) Balance Sheet</strong></div>
-        <div class="mc-option"><input type="radio" name="q21" value="B"> B) Income Statement</div>
-        <div class="mc-option"><input type="radio" name="q21" value="C"> <strong>C) Retained Earnings Statement</strong></div>
-        <div class="mc-option"><input type="radio" name="q21" value="D"> D) Statement of Cash Flows</div>
-        <p><strong>Answer: A) Balance Sheet and C) Retained Earnings Statement</strong></p>
-        <p class="example">Real-world example: A tech startup shows retained earnings on both its balance sheet (equity section) and retained earnings statement (detailing changes).</p>
-        <p class="mc-feedback" id="feedback-q21"></p>
+            <h3>21. LO 4.5 On which two financial statements would the Retained Earnings account appear?</h3>
+            <div class="mc-option"><input type="radio" name="q21" value="A"> <strong>A) Balance Sheet</strong></div>
+            <div class="mc-option"><input type="radio" name="q21" value="B"> B) Income Statement</div>
+            <div class="mc-option"><input type="radio" name="q21" value="C"> <strong>C) Retained Earnings Statement</strong></div>
+            <div class="mc-option"><input type="radio" name="q21" value="D"> D) Statement of Cash Flows</div>
+            <p><strong>Answer: A) Balance Sheet and C) Retained Earnings Statement</strong></p>
+            <p class="example">Real-world example: A tech startup shows retained earnings on both its balance sheet (equity section) and retained earnings statement (detailing changes).</p>
+            <p class="mc-feedback" id="feedback-q21"></p>
+        </div>
+        <div id="flashcard-content" style="display: none;">
+            <div class="flashcard">
+                <div class="inner">
+                    <div class="front">
+                        <h3>1. LO 4.1 Which of the following is any reporting period shorter than a full year (fiscal or calendar) and can encompass monthly, quarterly, or half-year statements?</h3>
+                        <p class="option">A) fiscal year</p>
+                        <p class="option">B) interim period</p>
+                        <p class="option">C) calendar year</p>
+                        <p class="option">D) fixed year</p>
+                    </div>
+                    <div class="back">
+                        <p><strong>Answer: B) interim period</strong></p>
+                        <p class="example">Real-world example: A company like Walmart prepares quarterly financial reports for investors, covering three months, which is an interim period.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="flashcard">
+                <div class="inner">
+                    <div class="front">
+                        <h3>2. LO 4.1 Which of the following is the federal, independent agency that provides oversight of public companies to maintain fair representation of company financial activities for investors to make informed decisions?</h3>
+                        <p class="option">A) IRS (Internal Revenue Service)</p>
+                        <p class="option">B) SEC (Securities and Exchange Commission)</p>
+                        <p class="option">C) FASB (Financial Accounting Standards Board)</p>
+                        <p class="option">D) FDIC (Federal Deposit Insurance Corporation)</p>
+                    </div>
+                    <div class="back">
+                        <p><strong>Answer: B) SEC (Securities and Exchange Commission)</strong></p>
+                        <p class="example">Real-world example: The SEC reviews Tesla’s financial statements to ensure they are accurate for shareholders.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="flashcard">
+                <div class="inner">
+                    <div class="front">
+                        <h3>3. LO 4.1 Revenues and expenses must be recorded in the accounting period in which they were earned or incurred, no matter when cash receipts or outlays occur under which of the following accounting methods?</h3>
+                        <p class="option">A) accrual basis accounting</p>
+                        <p class="option">B) cash basis accounting</p>
+                        <p class="option">C) tax basis accounting</p>
+                        <p class="option">D) revenue basis accounting</p>
+                    </div>
+                    <div class="back">
+                        <p><strong>Answer: A) accrual basis accounting</strong></p>
+                        <p class="example">Real-world example: A landscaping company records revenue when it mows a lawn in December, even if the client pays in January.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="flashcard">
+                <div class="inner">
+                    <div class="front">
+                        <h3>4. LO 4.1 Which of the following breaks down company financial information into specific time spans, and can cover a month, quarter, half-year, or full year?</h3>
+                        <p class="option">A) accounting period</p>
+                        <p class="option">B) yearly period</p>
+                        <p class="option">C) monthly period</p>
+                        <p class="option">D) fiscal period</p>
+                    </div>
+                    <div class="back">
+                        <p><strong>Answer: A) accounting period</strong></p>
+                        <p class="example">Real-world example: A small bakery tracks its sales and expenses monthly to see how it’s doing each period.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="flashcard">
+                <div class="inner">
+                    <div class="front">
+                        <h3>5. LO 4.1 Which of the following is a twelve-month reporting cycle that can begin in any month, except January 1, and records financial data for that twelve-month consecutive period?</h3>
+                        <p class="option">A) fixed year</p>
+                        <p class="option">B) interim period</p>
+                        <p class="option">C) calendar year</p>
+                        <p class="option">D) fiscal year</p>
+                    </div>
+                    <div class="back">
+                        <p><strong>Answer: D) fiscal year</strong></p>
+                        <p class="example">Real-world example: Apple’s fiscal year runs from October to September, covering 12 months for its financial reports.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="flashcard">
+                <div class="inner">
+                    <div class="front">
+                        <h3>6. LO 4.2 Which type of adjustment occurs when cash is either collected or paid, but the related income or expense is not reportable in the current period?</h3>
+                        <p class="option">A) accrual</p>
+                        <p class="option">B) deferral</p>
+                        <p class="option">C) estimate</p>
+                        <p class="option">D) cull</p>
+                    </div>
+                    <div class="back">
+                        <p><strong>Answer: B) deferral</strong></p>
+                        <p class="example">Real-world example: A gym collects a yearly membership fee upfront but records the revenue monthly as the service is provided.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="flashcard">
+                <div class="inner">
+                    <div class="front">
+                        <h3>7. LO 4.2 Which type of adjustment occurs when cash is not collected or paid, but the related income or expense is reportable in the current period?</h3>
+                        <p class="option">A) accrual</p>
+                        <p class="option">B) deferral</p>
+                        <p class="option">C) estimate</p>
+                        <p class="option">D) cull</p>
+                    </div>
+                    <div class="back">
+                        <p><strong>Answer: A) accrual</strong></p>
+                        <p class="example">Real-world example: A consulting firm records revenue for work done in December, even though the client will pay in January.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="flashcard">
+                <div class="inner">
+                    <div class="front">
+                        <h3>8. LO 4.2 If an adjustment includes an entry to a payable or receivable account, which type of adjustment is it?</h3>
+                        <p class="option">A) accrual</p>
+                        <p class="option">B) deferral</p>
+                        <p class="option">C) estimate</p>
+                        <p class="option">D) cull</p>
+                    </div>
+                    <div class="back">
+                        <p><strong>Answer: A) accrual</strong></p>
+                        <p class="example">Real-world example: A company records salaries payable for employees’ work in December, to be paid in January.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="flashcard">
+                <div class="inner">
+                    <div class="front">
+                        <h3>9. LO 4.2 If an adjustment includes an entry to Accumulated Depreciation, which type of adjustment is it?</h3>
+                        <p class="option">A) accrual</p>
+                        <p class="option">B) deferral</p>
+                        <p class="option">C) estimate</p>
+                        <p class="option">D) cull</p>
+                    </div>
+                    <div class="back">
+                        <p><strong>Answer: C) estimate</strong></p>
+                        <p class="example">Real-world example: A delivery company records depreciation for its trucks, estimating their value loss over time.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="flashcard">
+                <div class="inner">
+                    <div class="front">
+                        <h3>10. LO 4.2 Rent collected in advance is an example of which of the following?</h3>
+                        <p class="option">A) accrued expense</p>
+                        <p class="option">B) accrued revenue</p>
+                        <p class="option">C) deferred expense (prepaid expense)</p>
+                        <p class="option">D) deferred revenue (unearned revenue)</p>
+                    </div>
+                    <div class="back">
+                        <p><strong>Answer: D) deferred revenue (unearned revenue)</strong></p>
+                        <p class="example">Real-world example: A landlord collects six months’ rent upfront but recognizes it as revenue each month as the tenant uses the property.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="flashcard">
+                <div class="inner">
+                    <div class="front">
+                        <h3>11. LO 4.2 Rent paid in advance is an example of which of the following?</h3>
+                        <p class="option">A) accrued expense</p>
+                        <p class="option">B) accrued revenue</p>
+                        <p class="option">C) deferred expense (prepaid expense)</p>
+                        <p class="option">D) deferred revenue (unearned revenue)</p>
+                    </div>
+                    <div class="back">
+                        <p><strong>Answer: C) deferred expense (prepaid expense)</strong></p>
+                        <p class="example">Real-world example: A business pays a year’s rent in advance and expenses it monthly as the space is used.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="flashcard">
+                <div class="inner">
+                    <div class="front">
+                        <h3>12. LO 4.2 Salaries owed but not yet paid is an example of which of the following?</h3>
+                        <p class="option">A) accrued expense</p>
+                        <p class="option">B) accrued revenue</p>
+                        <p class="option">C) deferred expense (prepaid expense)</p>
+                        <p class="option">D) deferred revenue (unearned revenue)</p>
+                    </div>
+                    <div class="back">
+                        <p><strong>Answer: A) accrued expense</strong></p>
+                        <p class="example">Real-world example: A store owes its employees for the last week of December but will pay them in January.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="flashcard">
+                <div class="inner">
+                    <div class="front">
+                        <h3>13. LO 4.2 Revenue earned but not yet collected is an example of which of the following?</h3>
+                        <p class="option">A) accrued expense</p>
+                        <p class="option">B) accrued revenue</p>
+                        <p class="option">C) deferred expense (prepaid expense)</p>
+                        <p class="option">D) deferred revenue (unearned revenue)</p>
+                    </div>
+                    <div class="back">
+                        <p><strong>Answer: B) accrued revenue</strong></p>
+                        <p class="example">Real-world example: A graphic designer completes a project in December but waits for the client’s payment in January.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="flashcard">
+                <div class="inner">
+                    <div class="front">
+                        <h3>14. LO 4.3 What adjusting journal entry is needed to record depreciation expense for the period?</h3>
+                        <p class="option">A) a debit to Depreciation Expense; a credit to Cash</p>
+                        <p class="option">B) a debit to Accumulated Depreciation; a credit to Depreciation Expense</p>
+                        <p class="option">C) a debit to Depreciation Expense; a credit to Accumulated Depreciation</p>
+                        <p class="option">D) a debit to Accumulated Depreciation; a credit to Cash</p>
+                    </div>
+                    <div class="back">
+                        <p><strong>Answer: C) a debit to Depreciation Expense; a credit to Accumulated Depreciation</strong></p>
+                        <p class="example">Real-world example: A restaurant records monthly depreciation for its kitchen equipment to reflect wear and tear.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="flashcard">
+                <div class="inner">
+                    <div class="front">
+                        <h3>15. LO 4.3 Which of these transactions requires an adjusting entry (debit) to Unearned Revenue?</h3>
+                        <p class="option">A) revenue earned but not yet collected</p>
+                        <p class="option">B) revenue collected but not yet earned</p>
+                        <p class="option">C) revenue earned before being collected, when it is later collected</p>
+                        <p class="option">D) revenue collected before being earned, when it is later earned</p>
+                    </div>
+                    <div class="back">
+                        <p><strong>Answer: D) revenue collected before being earned, when it is later earned</strong></p>
+                        <p class="example">Real-world example: A magazine subscription service collects payment upfront and debits Unearned Revenue when issues are delivered monthly.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="flashcard">
+                <div class="inner">
+                    <div class="front">
+                        <h3>16. LO 4.4 What critical purpose does the adjusted trial balance serve?</h3>
+                        <p class="option">A) It proves that transactions have been posted correctly</p>
+                        <p class="option">B) It is the source document from which to prepare the financial statements</p>
+                        <p class="option">C) It shows the beginning balances of every account, to be used to start the new year’s records</p>
+                        <p class="option">D) It proves that all journal entries have been made correctly</p>
+                    </div>
+                    <div class="back">
+                        <p><strong>Answer: B) It is the source document from which to prepare the financial statements</strong></p>
+                        <p class="example">Real-world example: A retailer uses the adjusted trial balance to create its income statement showing sales and expenses.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="flashcard">
+                <div class="inner">
+                    <div class="front">
+                        <h3>17. LO 4.4 Which of the following accounts’ balance would be a different number on the Balance Sheet than it is on the adjusted trial balance?</h3>
+                        <p class="option">A) accumulated depreciation</p>
+                        <p class="option">B) unearned service revenue</p>
+                        <p class="option">C) retained earnings</p>
+                        <p class="option">D) dividends</p>
+                    </div>
+                    <div class="back">
+                        <p><strong>Answer: C) retained earnings</strong></p>
+                        <p class="example">Real-world example: A company’s retained earnings on the balance sheet may reflect post-closing adjustments, differing from the trial balance.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="flashcard">
+                <div class="inner">
+                    <div class="front">
+                        <h3>18. LO 4.5 On which financial statement would the Supplies account appear?</h3>
+                        <p class="option">A) Balance Sheet</p>
+                        <p class="option">B) Income Statement</p>
+                        <p class="option">C) Retained Earnings Statement</p>
+                        <p class="option">D) Statement of Cash Flows</p>
+                    </div>
+                    <div class="back">
+                        <p><strong>Answer: A) Balance Sheet</strong></p>
+                        <p class="example">Real-world example: A print shop lists its paper and ink supplies as assets on its balance sheet.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="flashcard">
+                <div class="inner">
+                    <div class="front">
+                        <h3>19. LO 4.5 On which financial statement would the Dividends account appear?</h3>
+                        <p class="option">A) Balance Sheet</p>
+                        <p class="option">B) Income Statement</p>
+                        <p class="option">C) Retained Earnings Statement</p>
+                        <p class="option">D) Statement of Cash Flows</p>
+                    </div>
+                    <div class="back">
+                        <p><strong>Answer: C) Retained Earnings Statement</strong></p>
+                        <p class="example">Real-world example: A corporation reports dividends paid to shareholders in its retained earnings statement.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="flashcard">
+                <div class="inner">
+                    <div class="front">
+                        <h3>20. LO 4.5 On which financial statement would the Accumulated Depreciation account appear?</h3>
+                        <p class="option">A) Balance Sheet</p>
+                        <p class="option">B) Income Statement</p>
+                        <p class="option">C) Retained Earnings Statement</p>
+                        <p class="option">D) Statement of Cash Flows</p>
+                    </div>
+                    <div class="back">
+                        <p><strong>Answer: A) Balance Sheet</strong></p>
+                        <p class="example">Real-world example: A trucking company shows accumulated depreciation for its fleet on the balance sheet to reduce asset value.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="flashcard">
+                <div class="inner">
+                    <div class="front">
+                        <h3>21. LO 4.5 On which two financial statements would the Retained Earnings account appear?</h3>
+                        <p class="option">A) Balance Sheet</p>
+                        <p class="option">B) Income Statement</p>
+                        <p class="option">C) Retained Earnings Statement</p>
+                        <p class="option">D) Statement of Cash Flows</p>
+                    </div>
+                    <div class="back">
+                        <p><strong>Answer: A) Balance Sheet and C) Retained Earnings Statement</strong></p>
+                        <p class="example">Real-world example: A tech startup shows retained earnings on both its balance sheet (equity section) and retained earnings statement (detailing changes).</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div id="short-answer" class="tab-content">
@@ -1188,6 +1593,36 @@
                     feedback.classList.remove('correct');
                 }
                 feedback.style.display = 'block';
+            });
+        });
+    }
+
+    // View toggle for multiple choice
+    const quizViewBtn = document.getElementById('quiz-view');
+    const flashcardViewBtn = document.getElementById('flashcard-view');
+    const quizContent = document.getElementById('quiz-content');
+    const flashcardContent = document.getElementById('flashcard-content');
+
+    if (quizViewBtn && flashcardViewBtn && quizContent && flashcardContent) {
+        quizViewBtn.addEventListener('click', () => {
+            quizViewBtn.classList.add('active');
+            flashcardViewBtn.classList.remove('active');
+            quizContent.style.display = 'block';
+            flashcardContent.style.display = 'none';
+        });
+
+        flashcardViewBtn.addEventListener('click', () => {
+            flashcardViewBtn.classList.add('active');
+            quizViewBtn.classList.remove('active');
+            quizContent.style.display = 'none';
+            flashcardContent.style.display = 'block';
+        });
+
+        // Flashcard flip
+        const flashcards = document.querySelectorAll('.flashcard');
+        flashcards.forEach(card => {
+            card.addEventListener('click', () => {
+                card.classList.toggle('flipped');
             });
         });
     }

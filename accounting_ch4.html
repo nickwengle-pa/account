@@ -238,9 +238,17 @@
             color: white;
         }
         .flashcard {
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
             perspective: 1000px;
             margin-bottom: 30px;
             cursor: pointer;
+        }
+        .flashcard.visible {
+            opacity: 1;
+        }
+        .flashcard.hidden {
+            display: none;
         }
         .flashcard .inner {
             position: relative;
@@ -283,6 +291,45 @@
         .option {
             margin: 5px 0;
         }
+        .flashcard-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .flashcard-navigation button {
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .flashcard-navigation button:hover {
+            background-color: #2980b9;
+        }
+        .flashcard-navigation button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        body.dark-mode .flashcard-navigation button {
+            background-color: #2c3e50;
+            color: #e0e0e0;
+        }
+        body.dark-mode .flashcard-navigation button:hover {
+            background-color: #1f2b3a;
+        }
+        body.dark-mode .flashcard-navigation button:disabled {
+            background-color: #555;
+        }
+        #flashcard-counter {
+            font-weight: bold;
+        }
+        body.dark-mode #flashcard-counter {
+            color: #66b2ff;
+        }
         @media (max-width: 600px) {
             body {
                 margin: 20px;
@@ -319,6 +366,13 @@
             }
             .flashcard .inner {
                 min-height: 300px; /* Ensure minimum height on small screens */
+            }
+            .flashcard-navigation {
+                flex-direction: column;
+            }
+            .flashcard-navigation button {
+                margin: 5px 0;
+                width: 100%;
             }
         }
     </style>
@@ -553,7 +607,7 @@
             <p class="mc-feedback" id="feedback-q21"></p>
         </div>
         <div id="flashcard-content" style="display: none;">
-            <div class="flashcard">
+            <div class="flashcard hidden">
                 <div class="inner">
                     <div class="front">
                         <h3>1. LO 4.1 Which of the following is any reporting period shorter than a full year (fiscal or calendar) and can encompass monthly, quarterly, or half-year statements?</h3>
@@ -568,7 +622,7 @@
                     </div>
                 </div>
             </div>
-            <div class="flashcard">
+            <div class="flashcard hidden">
                 <div class="inner">
                     <div class="front">
                         <h3>2. LO 4.1 Which of the following is the federal, independent agency that provides oversight of public companies to maintain fair representation of company financial activities for investors to make informed decisions?</h3>
@@ -583,7 +637,7 @@
                     </div>
                 </div>
             </div>
-            <div class="flashcard">
+            <div class="flashcard hidden">
                 <div class="inner">
                     <div class="front">
                         <h3>3. LO 4.1 Revenues and expenses must be recorded in the accounting period in which they were earned or incurred, no matter when cash receipts or outlays occur under which of the following accounting methods?</h3>
@@ -598,7 +652,7 @@
                     </div>
                 </div>
             </div>
-            <div class="flashcard">
+            <div class="flashcard hidden">
                 <div class="inner">
                     <div class="front">
                         <h3>4. LO 4.1 Which of the following breaks down company financial information into specific time spans, and can cover a month, quarter, half-year, or full year?</h3>
@@ -613,7 +667,7 @@
                     </div>
                 </div>
             </div>
-            <div class="flashcard">
+            <div class="flashcard hidden">
                 <div class="inner">
                     <div class="front">
                         <h3>5. LO 4.1 Which of the following is a twelve-month reporting cycle that can begin in any month, except January 1, and records financial data for that twelve-month consecutive period?</h3>
@@ -628,7 +682,7 @@
                     </div>
                 </div>
             </div>
-            <div class="flashcard">
+            <div class="flashcard hidden">
                 <div class="inner">
                     <div class="front">
                         <h3>6. LO 4.2 Which type of adjustment occurs when cash is either collected or paid, but the related income or expense is not reportable in the current period?</h3>
@@ -643,7 +697,7 @@
                     </div>
                 </div>
             </div>
-            <div class="flashcard">
+            <div class="flashcard hidden">
                 <div class="inner">
                     <div class="front">
                         <h3>7. LO 4.2 Which type of adjustment occurs when cash is not collected or paid, but the related income or expense is reportable in the current period?</h3>
@@ -658,7 +712,7 @@
                     </div>
                 </div>
             </div>
-            <div class="flashcard">
+            <div class="flashcard hidden">
                 <div class="inner">
                     <div class="front">
                         <h3>8. LO 4.2 If an adjustment includes an entry to a payable or receivable account, which type of adjustment is it?</h3>
@@ -673,7 +727,7 @@
                     </div>
                 </div>
             </div>
-            <div class="flashcard">
+            <div class="flashcard hidden">
                 <div class="inner">
                     <div class="front">
                         <h3>9. LO 4.2 If an adjustment includes an entry to Accumulated Depreciation, which type of adjustment is it?</h3>
@@ -688,7 +742,7 @@
                     </div>
                 </div>
             </div>
-            <div class="flashcard">
+            <div class="flashcard hidden">
                 <div class="inner">
                     <div class="front">
                         <h3>10. LO 4.2 Rent collected in advance is an example of which of the following?</h3>
@@ -703,7 +757,7 @@
                     </div>
                 </div>
             </div>
-            <div class="flashcard">
+            <div class="flashcard hidden">
                 <div class="inner">
                     <div class="front">
                         <h3>11. LO 4.2 Rent paid in advance is an example of which of the following?</h3>
@@ -718,7 +772,7 @@
                     </div>
                 </div>
             </div>
-            <div class="flashcard">
+            <div class="flashcard hidden">
                 <div class="inner">
                     <div class="front">
                         <h3>12. LO 4.2 Salaries owed but not yet paid is an example of which of the following?</h3>
@@ -733,7 +787,7 @@
                     </div>
                 </div>
             </div>
-            <div class="flashcard">
+            <div class="flashcard hidden">
                 <div class="inner">
                     <div class="front">
                         <h3>13. LO 4.2 Revenue earned but not yet collected is an example of which of the following?</h3>
@@ -748,7 +802,7 @@
                     </div>
                 </div>
             </div>
-            <div class="flashcard">
+            <div class="flashcard hidden">
                 <div class="inner">
                     <div class="front">
                         <h3>14. LO 4.3 What adjusting journal entry is needed to record depreciation expense for the period?</h3>
@@ -763,7 +817,7 @@
                     </div>
                 </div>
             </div>
-            <div class="flashcard">
+            <div class="flashcard hidden">
                 <div class="inner">
                     <div class="front">
                         <h3>15. LO 4.3 Which of these transactions requires an adjusting entry (debit) to Unearned Revenue?</h3>
@@ -778,7 +832,7 @@
                     </div>
                 </div>
             </div>
-            <div class="flashcard">
+            <div class="flashcard hidden">
                 <div class="inner">
                     <div class="front">
                         <h3>16. LO 4.4 What critical purpose does the adjusted trial balance serve?</h3>
@@ -793,7 +847,7 @@
                     </div>
                 </div>
             </div>
-            <div class="flashcard">
+            <div class="flashcard hidden">
                 <div class="inner">
                     <div class="front">
                         <h3>17. LO 4.4 Which of the following accounts’ balance would be a different number on the Balance Sheet than it is on the adjusted trial balance?</h3>
@@ -808,7 +862,7 @@
                     </div>
                 </div>
             </div>
-            <div class="flashcard">
+            <div class="flashcard hidden">
                 <div class="inner">
                     <div class="front">
                         <h3>18. LO 4.5 On which financial statement would the Supplies account appear?</h3>
@@ -823,7 +877,7 @@
                     </div>
                 </div>
             </div>
-            <div class="flashcard">
+            <div class="flashcard hidden">
                 <div class="inner">
                     <div class="front">
                         <h3>19. LO 4.5 On which financial statement would the Dividends account appear?</h3>
@@ -838,7 +892,7 @@
                     </div>
                 </div>
             </div>
-            <div class="flashcard">
+            <div class="flashcard hidden">
                 <div class="inner">
                     <div class="front">
                         <h3>20. LO 4.5 On which financial statement would the Accumulated Depreciation account appear?</h3>
@@ -853,7 +907,7 @@
                     </div>
                 </div>
             </div>
-            <div class="flashcard">
+            <div class="flashcard hidden">
                 <div class="inner">
                     <div class="front">
                         <h3>21. LO 4.5 On which two financial statements would the Retained Earnings account appear?</h3>
@@ -867,6 +921,11 @@
                         <p class="example">Real-world example: A tech startup shows retained earnings on both its balance sheet (equity section) and retained earnings statement (detailing changes).</p>
                     </div>
                 </div>
+            </div>
+            <div class="flashcard-navigation">
+                <button id="prev-flashcard">Previous</button>
+                <span id="flashcard-counter">1 / 21</span>
+                <button id="next-flashcard">Next</button>
             </div>
         </div>
     </div>
@@ -1616,16 +1675,74 @@
             quizViewBtn.classList.remove('active');
             quizContent.style.display = 'none';
             flashcardContent.style.display = 'block';
-        });
-
-        // Flashcard flip
-        const flashcards = document.querySelectorAll('.flashcard');
-        flashcards.forEach(card => {
-            card.addEventListener('click', () => {
-                card.classList.toggle('flipped');
-            });
+            showFlashcard(currentFlashcardIndex);
         });
     }
+
+    // Flashcard navigation
+    const flashcards = document.querySelectorAll('.flashcard');
+    let currentFlashcardIndex = 0;
+    const prevBtn = document.getElementById('prev-flashcard');
+    const nextBtn = document.getElementById('next-flashcard');
+    const counter = document.getElementById('flashcard-counter');
+
+    function showFlashcard(index) {
+        flashcards.forEach((card, i) => {
+            if (i !== index) {
+                card.classList.remove('visible');
+                setTimeout(() => {
+                    card.classList.add('hidden');
+                }, 300);
+            } else {
+                card.classList.remove('hidden', 'flipped');
+                setTimeout(() => {
+                    card.classList.add('visible');
+                }, 10);
+            }
+        });
+        counter.textContent = `${index + 1} / ${flashcards.length}`;
+        prevBtn.disabled = index === 0;
+        nextBtn.disabled = index === flashcards.length - 1;
+    }
+
+    if (prevBtn && nextBtn) {
+        prevBtn.addEventListener('click', () => {
+            if (currentFlashcardIndex > 0) {
+                currentFlashcardIndex--;
+                showFlashcard(currentFlashcardIndex);
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (currentFlashcardIndex < flashcards.length - 1) {
+                currentFlashcardIndex++;
+                showFlashcard(currentFlashcardIndex);
+            }
+        });
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+        if (flashcardContent.style.display === 'block') {
+            if (e.key === 'ArrowLeft' && currentFlashcardIndex > 0) {
+                currentFlashcardIndex--;
+                showFlashcard(currentFlashcardIndex);
+            } else if (e.key === 'ArrowRight' && currentFlashcardIndex < flashcards.length - 1) {
+                currentFlashcardIndex++;
+                showFlashcard(currentFlashcardIndex);
+            } else if (e.key === ' ') {
+                e.preventDefault();
+                flashcards[currentFlashcardIndex].classList.toggle('flipped');
+            }
+        }
+    });
+
+    // Flashcard flip on click
+    flashcards.forEach(card => {
+        card.addEventListener('click', () => {
+            card.classList.toggle('flipped');
+        });
+    });
 
     // Smooth scroll for internal links (if any)
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {

@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Architectural Feet ↔ Decimal Feet Toolkit</title>
+  <style>
+    :root {
+      --bg: #071018;
+      --panel: #0d1823;
+      --ink: #f2f6fa;
+      --muted: #9cb1c4;
+      --accent: #3ecf8e;
+      --border: #1b2936;
+      --warning: #f59e0b;
+      --error: #f05252;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+      background: radial-gradient(circle at top, #0f1c2a, #05080d 65%);
+      color: var(--ink);
+      line-height: 1.5;
+      padding: 24px;
+    }
+
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 20px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: 0 24px 60px rgba(4, 11, 20, 0.45);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: clamp(26px, 4vw, 38px);
+      font-weight: 800;
+      letter-spacing: 0.5px;
+    }
+
+    header p {
+      margin: 4px 0 0;
+      max-width: 720px;
+      color: var(--muted);
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(62, 207, 142, 0.12);
+      color: var(--accent);
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 13px;
+      border: 1px solid rgba(62, 207, 142, 0.28);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 20px;
+    }
+
+    .panel {
+      grid-column: span 12;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 16px 45px rgba(0, 0, 0, 0.35);
+    }
+
+    @media (min-width: 960px) {
+      .panel.half { grid-column: span 6; }
+    }
+
+    h2 {
+      margin: 0 0 16px;
+      font-size: 20px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    h2 .kicker {
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1.3px;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 4px 8px;
+      border-radius: 999px;
+      color: var(--muted);
+    }
+
+    fieldset {
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 14px;
+      padding: 16px;
+      margin: 0 0 16px;
+    }
+
+    fieldset legend {
+      padding: 0 6px;
+      font-size: 12px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    label {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 14px;
+    }
+
+    input[type="number"],
+    input[type="text"],
+    select {
+      width: 100%;
+      background: rgba(4, 11, 20, 0.55);
+      color: var(--ink);
+      border: 1px solid rgba(31, 45, 61, 0.9);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 15px;
+      transition: border-color 0.2s ease;
+    }
+
+    input:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    button {
+      border: none;
+      border-radius: 12px;
+      padding: 10px 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.05s ease, background 0.2s ease, border 0.2s ease;
+    }
+
+    button.primary { background: var(--accent); color: #05231a; }
+    button.secondary { background: rgba(255, 255, 255, 0.08); color: var(--ink); border: 1px solid rgba(255,255,255,0.08); }
+    button.ghost { background: transparent; color: var(--ink); border: 1px solid rgba(255,255,255,0.12); }
+
+    button:active { transform: translateY(1px); }
+
+    .result-block {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .stat {
+      background: rgba(4, 11, 20, 0.55);
+      border: 1px solid rgba(31, 45, 61, 0.8);
+      border-radius: 14px;
+      padding: 14px;
+    }
+
+    .stat h3 {
+      margin: 0;
+      font-size: 15px;
+      color: var(--muted);
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+    }
+
+    .stat p {
+      margin: 6px 0 0;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+    }
+
+    .stat small {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .status-line {
+      margin-top: 8px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .status-line strong { color: var(--ink); }
+
+    .status-line.error { color: var(--error); }
+
+    .note {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 12px;
+    }
+
+    .out-display {
+      background: rgba(5, 12, 21, 0.7);
+      border: 1px dashed rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 14px;
+      font-family: "JetBrains Mono", "Fira Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      font-size: 16px;
+      min-height: 46px;
+      display: flex;
+      align-items: center;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 22px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(8, 58, 45, 0.95);
+      color: var(--accent);
+      border: 1px solid rgba(62, 207, 142, 0.4);
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-weight: 700;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.4);
+      z-index: 999;
+      transition: opacity 0.3s ease;
+    }
+
+    .toast.warn {
+      background: rgba(75, 47, 5, 0.92);
+      color: var(--warning);
+      border-color: rgba(245, 158, 11, 0.5);
+    }
+
+    ul.guidance {
+      margin: 12px 0 0 22px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    code { font-family: "JetBrains Mono", monospace; color: var(--accent); }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div>
+        <h1>Architectural Feet ↔ Decimal Feet Toolkit</h1>
+        <p>Purpose-built for civil and architectural workflows. Convert architectural notation such as <code>4' 8 1/2"</code> into decimal feet, normalize field readings, and translate decimal survey data back to reduced fractions at 1/16" resolution.</p>
+      </div>
+      <div class="tag" title="Conversion resolution">Precision: 1/16″</div>
+    </header>
+
+    <section class="layout">
+      <article class="panel half" aria-labelledby="forward-heading">
+        <h2 id="forward-heading"><span class="kicker">Field to CAD</span> Architectural → Decimal Feet</h2>
+
+        <fieldset>
+          <legend>Component entry</legend>
+          <div class="grid">
+            <label>
+              Feet
+              <input id="feet" type="number" inputmode="numeric" placeholder="4" />
+            </label>
+            <label>
+              Inches
+              <input id="inches" type="number" inputmode="numeric" placeholder="8" />
+            </label>
+            <label>
+              Fraction (supports 1/16″)
+              <input id="fraction" type="text" inputmode="text" placeholder="1/2 or 3/8" />
+            </label>
+            <label>
+              Sign
+              <button id="sign-toggle" type="button" class="ghost">+ (positive)</button>
+            </label>
+            <label>
+              Decimal places
+              <input id="decimals" type="number" min="2" max="6" step="1" value="3" />
+            </label>
+          </div>
+          <p id="fraction-status" class="status-line">Fraction interpreted as <strong>0/16″</strong> (reduced 0/1)</p>
+        </fieldset>
+
+        <fieldset>
+          <legend>Architectural string (optional)</legend>
+          <div class="grid">
+            <label style="grid-column: 1 / -1;">
+              Paste a measurement
+              <input id="arch-string" type="text" placeholder="4' 8 1/2&quot; or -2 ft 11 3/4 in" />
+            </label>
+          </div>
+          <p id="arch-string-status" class="status-line">Enter a field reading to auto-populate the component fields.</p>
+        </fieldset>
+
+        <div class="btn-row">
+          <button id="convert-forward" class="primary" type="button">Convert to decimal feet</button>
+          <button id="normalize" class="secondary" type="button">Normalize inputs</button>
+          <button id="reset-forward" class="ghost" type="button">Reset</button>
+          <button id="copy-forward" class="ghost" type="button">Copy decimal value</button>
+        </div>
+
+        <div class="out-display" id="decimal-output" role="status" aria-live="polite">—</div>
+
+        <div class="result-block">
+          <div class="stat">
+            <h3>Decimal feet</h3>
+            <p id="decimal-feet">—</p>
+            <small id="decimal-feet-raw"></small>
+          </div>
+          <div class="stat">
+            <h3>Normalized architectural</h3>
+            <p id="normalized-arch">—</p>
+            <small id="normalized-arch-detail"></small>
+          </div>
+          <div class="stat">
+            <h3>Total inches</h3>
+            <p id="total-inches">—</p>
+            <small id="total-inches-detail"></small>
+          </div>
+        </div>
+        <p class="note">Computation: <code>ft + (in + sixteenths/16) / 12</code>. Normalize to auto-carry 16/16″ → 1″ and 12″ → 1′.</p>
+      </article>
+
+      <article class="panel half" aria-labelledby="reverse-heading">
+        <h2 id="reverse-heading"><span class="kicker">CAD to Field</span> Decimal Feet → Architectural</h2>
+
+        <fieldset>
+          <legend>Decimal entry</legend>
+          <div class="grid">
+            <label>
+              Decimal feet
+              <input id="decimal-feet-input" type="number" inputmode="decimal" step="0.0001" placeholder="12.5833" />
+            </label>
+            <label>
+              Fraction format
+              <select id="fraction-style">
+                <option value="reduced" selected>Reduced (1/2, 3/8, …)</option>
+                <option value="sixteenths">Always 16ths (8/16)</option>
+              </select>
+            </label>
+          </div>
+        </fieldset>
+
+        <div class="btn-row">
+          <button id="convert-reverse" class="primary" type="button">Convert to architectural</button>
+          <button id="copy-reverse" class="ghost" type="button">Copy architectural string</button>
+        </div>
+
+        <div class="out-display" id="architectural-output" role="status" aria-live="polite">—</div>
+
+        <div class="result-block">
+          <div class="stat">
+            <h3>Feet / inches</h3>
+            <p id="reverse-arch">—</p>
+            <small id="reverse-arch-detail"></small>
+          </div>
+          <div class="stat">
+            <h3>Fraction breakdown</h3>
+            <p id="reverse-fraction">—</p>
+            <small id="reverse-fraction-detail"></small>
+          </div>
+          <div class="stat">
+            <h3>Raw sixteenths</h3>
+            <p id="reverse-sixteenths">—</p>
+            <small id="reverse-sixteenths-detail"></small>
+          </div>
+        </div>
+        <p class="note">Negative values apply to the whole measurement (e.g., −1.25 ft → −1′-3″). Rounding is always to the nearest 1/16″ with automatic carry to feet.</p>
+      </article>
+
+      <article class="panel" aria-labelledby="guidance-heading">
+        <h2 id="guidance-heading"><span class="kicker">Operating notes</span> Field guidance</h2>
+        <ul class="guidance">
+          <li>All inputs synchronize — typing in the architectural fields updates the decimal value and vice versa.</li>
+          <li>Fraction input accepts strings such as <code>1/2</code>, <code>5/16</code>, or <code>8</code> (interpreted as 8/16). Values are rounded to the nearest sixteenth.</li>
+          <li>Use Normalize after manual edits to carry excess sixteenths or inches.</li>
+          <li>Copy buttons push the currently displayed result to your clipboard for paste into CAD, BIM, or surveying applications.</li>
+        </ul>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    const byId = (id) => document.getElementById(id);
+    const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
+    const gcd = (a, b) => { a = Math.abs(a); b = Math.abs(b); while (b) [a,b] = [b, a % b]; return a || 1; };
+
+    const feetInput = byId('feet');
+    const inchesInput = byId('inches');
+    const fractionInput = byId('fraction');
+    const fractionStatus = byId('fraction-status');
+    const signToggle = byId('sign-toggle');
+    const decimalsInput = byId('decimals');
+    const archStringInput = byId('arch-string');
+    const archStringStatus = byId('arch-string-status');
+    const decimalOutput = byId('decimal-output');
+    const decimalFeetDisplay = byId('decimal-feet');
+    const decimalFeetRaw = byId('decimal-feet-raw');
+    const normalizedArch = byId('normalized-arch');
+    const normalizedArchDetail = byId('normalized-arch-detail');
+    const totalInchesDisplay = byId('total-inches');
+    const totalInchesDetail = byId('total-inches-detail');
+
+    const decimalFeetInput = byId('decimal-feet-input');
+    const fractionStyleSelect = byId('fraction-style');
+    const architecturalOutput = byId('architectural-output');
+    const reverseArch = byId('reverse-arch');
+    const reverseArchDetail = byId('reverse-arch-detail');
+    const reverseFraction = byId('reverse-fraction');
+    const reverseFractionDetail = byId('reverse-fraction-detail');
+    const reverseSixteenths = byId('reverse-sixteenths');
+    const reverseSixteenthsDetail = byId('reverse-sixteenths-detail');
+
+    const convertForwardBtn = byId('convert-forward');
+    const normalizeBtn = byId('normalize');
+    const resetForwardBtn = byId('reset-forward');
+    const copyForwardBtn = byId('copy-forward');
+    const convertReverseBtn = byId('convert-reverse');
+    const copyReverseBtn = byId('copy-reverse');
+
+    let currentSixteenths = 0;
+    let syncing = false;
+
+    function normalizeAbs(feet, inches, sixteenths){
+      feet = Math.max(0, Math.trunc(Number(feet) || 0));
+      inches = Math.max(0, Math.trunc(Number(inches) || 0));
+      sixteenths = Math.max(0, Math.trunc(Number(sixteenths) || 0));
+
+      if (sixteenths >= 16){
+        inches += Math.floor(sixteenths / 16);
+        sixteenths = sixteenths % 16;
+      }
+      if (inches >= 12){
+        feet += Math.floor(inches / 12);
+        inches = inches % 12;
+      }
+      return { feet, inches, sixteenths };
+    }
+
+    function toDecimalFeet({feet, inches, sixteenths, negative=false}, decimals=3){
+      const abs = normalizeAbs(Math.abs(feet), Math.abs(inches), Math.abs(sixteenths));
+      const totalSixteenths = abs.inches * 16 + abs.sixteenths;
+      const val = abs.feet + totalSixteenths / 192; // 12 inches * 16 sixteenths
+      const signed = negative ? -val : val;
+      const d = clamp(Math.trunc(decimals || 3), 0, 10);
+      return { value: Number(signed.toFixed(d)), raw: signed, abs };
+    }
+
+    function fromDecimalFeet(decFeet, style='reduced'){
+      const negative = (Number(decFeet) || 0) < 0;
+      const abs = Math.abs(Number(decFeet) || 0);
+
+      const wholeFeet = Math.floor(abs);
+      const remainingFeet = abs - wholeFeet;
+      const totalInches = remainingFeet * 12;
+      let sixteenths = Math.round(totalInches * 16);
+
+      let inches = Math.floor(sixteenths / 16);
+      sixteenths = sixteenths % 16;
+
+      let carryFeet = 0;
+      if (inches >= 12){
+        carryFeet = Math.floor(inches / 12);
+        inches = inches % 12;
+      }
+
+      const feet = wholeFeet + carryFeet;
+
+      let num = sixteenths;
+      let den = 16;
+      let reducedNum = num;
+      let reducedDen = den;
+      if (num !== 0){
+        const g = gcd(num, den);
+        reducedNum = num / g;
+        reducedDen = den / g;
+      }
+
+      if (style === 'reduced'){
+        num = reducedNum;
+        den = reducedDen;
+      }
+
+      const compact = `${negative ? '-' : ''}${feet}' ${inches}${sixteenths ? `-${num}/${den}` : ''}"`;
+      const verbose = `${negative ? '−' : ''}${feet} ft, ${inches} in${sixteenths ? `, ${num}/${den} in` : ''}`;
+
+      return {
+        negative,
+        feet,
+        inches,
+        sixteenths,
+        num,
+        den,
+        reducedNum,
+        reducedDen,
+        textCompact: compact,
+        textVerbose: verbose,
+      };
+    }
+
+    function parseFraction(text){
+      if (!text || !text.trim()){
+        return { valid: true, sixteenths: 0, reduced: '0/1', raw: '0/16' };
+      }
+      const sanitized = text.toLowerCase()
+        .replace(/[″”]/g, '')
+        .replace(/[′’']/g, '')
+        .replace(/(in|inch|inches|\"|”)/g, '')
+        .replace(/(\bft\b|\bfoot\b|\bfeet\b)/g, '')
+        .replace(/(?!^)-/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+      if (!sanitized){
+        return { valid: true, sixteenths: 0, reduced: '0/1', raw: '0/16' };
+      }
+
+      if (/^\d+$/.test(sanitized)){
+        const sixteenths = Math.max(0, Math.trunc(Number(sanitized)));
+        const g = gcd(sixteenths, 16);
+        return {
+          valid: true,
+          sixteenths,
+          reduced: `${sixteenths / g}/${16 / g}`,
+          raw: `${sixteenths}/16`
+        };
+      }
+
+      if (/^\d*\.\d+$/.test(sanitized)){
+        const val = Number(sanitized);
+        const sixteenths = Math.round(Math.abs(val) * 16);
+        const g = gcd(sixteenths, 16);
+        return {
+          valid: true,
+          sixteenths,
+          reduced: `${sixteenths / g}/${16 / g}`,
+          raw: `${sixteenths}/16`
+        };
+      }
+
+      const match = sanitized.match(/^(\d+)\s*\/\s*(\d+)$/);
+      if (!match){
+        return { valid: false };
+      }
+
+      const num = Number(match[1]);
+      const den = Number(match[2]);
+      if (!den){
+        return { valid: false };
+      }
+
+      const frac = num / den;
+      if (!isFinite(frac)){
+        return { valid: false };
+      }
+
+      const sixteenths = Math.round(frac * 16);
+      const g = gcd(sixteenths, 16);
+      return {
+        valid: true,
+        sixteenths,
+        reduced: `${sixteenths / g}/${16 / g}`,
+        raw: `${sixteenths}/16`
+      };
+    }
+
+    function updateFractionStatus(parsed){
+      if (!parsed.valid){
+        fractionStatus.textContent = 'Fraction could not be interpreted. Expected formats: 1/2, 3/8, 5.';
+        fractionStatus.classList.add('error');
+        return;
+      }
+      fractionStatus.classList.remove('error');
+      fractionStatus.innerHTML = `Fraction interpreted as <strong>${parsed.raw}″</strong> (reduced ${parsed.reduced})`;
+    }
+
+    function setSign(negative){
+      signToggle.dataset.negative = negative ? 'true' : 'false';
+      signToggle.textContent = negative ? '− (negative)' : '+ (positive)';
+    }
+
+    function currentSign(){
+      return signToggle.dataset.negative === 'true';
+    }
+
+    function parseArchitecturalString(str){
+      if (!str || !str.trim()) return null;
+      let input = str.trim();
+      const negative = /^\s*-/.test(input);
+      input = input.replace(/^\s*[-+]/, '');
+
+      input = input
+        .replace(/[“”″]/g, '"')
+        .replace(/[’‘′]/g, "'")
+        .replace(/\bfeet\b|\bfoot\b|\bft\b/g, "'")
+        .replace(/\binches\b|\bin\b/g, '"')
+        .replace(/(?!^)-/g, ' ')
+        .replace(/\s+/g, ' ')
+        .toLowerCase();
+
+      let feet = 0;
+      let inches = 0;
+      let sixteenths = 0;
+
+      const feetMatch = input.match(/(\d+(?:\.\d+)?)\s*(?:'|ft)/);
+      if (feetMatch){
+        const measuredFeet = Number(feetMatch[1]);
+        feet = Math.floor(Math.abs(measuredFeet));
+        const fractionalFeet = Math.abs(measuredFeet) - feet;
+        if (fractionalFeet > 0){
+          const inchesFromFractionalFeet = fractionalFeet * 12;
+          const inchesWhole = Math.floor(inchesFromFractionalFeet);
+          inches += inchesWhole;
+          sixteenths += Math.round((inchesFromFractionalFeet - inchesWhole) * 16);
+        }
+        input = input.replace(feetMatch[0], ' ').trim();
+      }
+
+      const fractionMatch = input.match(/(\d+)\s*\/\s*(\d+)/);
+      if (fractionMatch){
+        const num = Number(fractionMatch[1]);
+        const den = Number(fractionMatch[2]);
+        if (den){
+          sixteenths = Math.round((num / den) * 16);
+        }
+        input = input.replace(fractionMatch[0], ' ').trim();
+      }
+
+      const inchMatch = input.match(/(\d+(?:\.\d+)?)\s*(?:"|in)/);
+      if (inchMatch){
+        const val = Number(inchMatch[1]);
+        const whole = Math.floor(val);
+        inches = whole;
+        sixteenths += Math.round((val - whole) * 16);
+        input = input.replace(inchMatch[0], ' ').trim();
+      }
+
+      const tokens = input.split(/\s+/).filter(Boolean);
+      if (!feetMatch && tokens.length){
+        const candidateFeet = Number(tokens.shift());
+        if (isFinite(candidateFeet)){
+          feet = Math.floor(Math.abs(candidateFeet));
+          if (candidateFeet % 1 !== 0){
+            const fractionalFeet = Math.abs(candidateFeet) - feet;
+            const inchesFromFractionalFeet = fractionalFeet * 12;
+            const inchesWhole = Math.floor(inchesFromFractionalFeet);
+            inches += inchesWhole;
+            sixteenths += Math.round((inchesFromFractionalFeet - inchesWhole) * 16);
+          }
+        }
+      }
+
+      if (tokens.length){
+        const candidateInches = Number(tokens.shift());
+        if (isFinite(candidateInches)){
+          const wholeInches = Math.floor(Math.abs(candidateInches));
+          inches += wholeInches;
+          sixteenths += Math.round((Math.abs(candidateInches) - wholeInches) * 16);
+        }
+      }
+
+      const normalized = normalizeAbs(feet, inches, sixteenths);
+      return { negative, ...normalized };
+    }
+
+    function formatArchitectural({negative, feet, inches, sixteenths}){
+      const g = gcd(sixteenths, 16);
+      const reducedNum = sixteenths ? sixteenths / g : 0;
+      const reducedDen = sixteenths ? 16 / g : 1;
+      const prefix = negative ? '−' : '';
+      const compact = `${negative ? '-' : ''}${feet}' ${inches}${sixteenths ? `-${reducedNum}/${reducedDen}` : ''}"`;
+      const verbose = `${prefix}${feet} ft ${inches} in${sixteenths ? ` ${reducedNum}/${reducedDen}"` : ''}`;
+      return { compact, verbose, reducedNum, reducedDen };
+    }
+
+    function toast(message, warn=false){
+      const el = document.createElement('div');
+      el.className = `toast${warn ? ' warn' : ''}`;
+      el.textContent = message;
+      document.body.appendChild(el);
+      setTimeout(() => {
+        el.style.opacity = '0';
+        setTimeout(() => el.remove(), 280);
+      }, 1400);
+    }
+
+    async function copyToClipboard(text){
+      try {
+        await navigator.clipboard.writeText(text);
+        toast('Copied to clipboard');
+      } catch (err){
+        console.error(err);
+        toast('Clipboard unavailable', true);
+      }
+    }
+
+    function gatherForwardInputs(){
+      const feet = Number(feetInput.value || 0);
+      const inches = Number(inchesInput.value || 0);
+      const decimals = Number(decimalsInput.value || 3);
+      const negative = currentSign();
+      return { feet, inches, sixteenths: currentSixteenths, decimals, negative };
+    }
+
+    function renderForward(){
+      const { feet, inches, sixteenths, decimals, negative } = gatherForwardInputs();
+      const decimal = toDecimalFeet({ feet, inches, sixteenths, negative }, decimals);
+      const abs = decimal.abs;
+      const formatted = formatArchitectural({ negative, feet: abs.feet, inches: abs.inches, sixteenths: abs.sixteenths });
+
+      const totalInches = abs.feet * 12 + abs.inches + abs.sixteenths / 16;
+
+      if (isFinite(decimal.value)){
+        decimalOutput.textContent = `${decimal.value} ft`;
+        decimalFeetDisplay.textContent = `${decimal.value} ft`;
+      } else {
+        decimalOutput.textContent = '—';
+        decimalFeetDisplay.textContent = '—';
+      }
+      decimalFeetRaw.textContent = isFinite(decimal.raw) ? `Raw value: ${decimal.raw} ft` : '';
+      normalizedArch.textContent = formatted.compact;
+      normalizedArchDetail.textContent = `Verbose: ${formatted.verbose}`;
+      totalInchesDisplay.textContent = isFinite(totalInches) ? `${negative ? '-' : ''}${totalInches.toFixed(4)} in` : '—';
+      totalInchesDetail.textContent = isFinite(totalInches) ? `${abs.feet * 12 + abs.inches} in + ${abs.sixteenths}/16″` : '';
+
+      if (!syncing){
+        syncing = true;
+        decimalFeetInput.value = decimal.raw;
+        renderReverse();
+        syncing = false;
+      }
+    }
+
+    function renderReverse(){
+      const style = fractionStyleSelect.value;
+      const value = Number(decimalFeetInput.value);
+      if (!isFinite(value)){
+        architecturalOutput.textContent = '—';
+        reverseArch.textContent = '—';
+        reverseArchDetail.textContent = '';
+        reverseFraction.textContent = '—';
+        reverseFractionDetail.textContent = '';
+        reverseSixteenths.textContent = '—';
+        reverseSixteenthsDetail.textContent = '';
+        return;
+      }
+
+      const res = fromDecimalFeet(value, style);
+      architecturalOutput.textContent = `${res.textCompact} (${res.textVerbose})`;
+      reverseArch.textContent = res.textCompact;
+      reverseArchDetail.textContent = res.textVerbose;
+
+      const reduced = `${res.reducedNum}/${res.reducedDen}`;
+      const styleFrac = res.sixteenths ? `${res.num}/${res.den}` : '—';
+      reverseFraction.textContent = res.sixteenths ? `${styleFrac}` : 'Whole inches';
+      reverseFractionDetail.textContent = res.sixteenths ? `Reduced: ${reduced}` : '';
+
+      reverseSixteenths.textContent = `${res.sixteenths} / 16`;
+      reverseSixteenthsDetail.textContent = res.sixteenths ? `${res.sixteenths} sixteenths ≈ ${(res.sixteenths / 16).toFixed(4)}″` : 'No fractional component';
+
+      if (!syncing){
+        syncing = true;
+        setSign(res.negative);
+        feetInput.value = res.feet;
+        inchesInput.value = res.inches;
+        currentSixteenths = res.sixteenths;
+        fractionInput.value = res.sixteenths ? `${res.reducedNum}/${res.reducedDen}` : '';
+        updateFractionStatus({ valid: true, raw: `${res.sixteenths}/16`, reduced: res.sixteenths ? `${res.reducedNum}/${res.reducedDen}` : '0/1' });
+        renderForward();
+        syncing = false;
+      }
+    }
+
+    function handleFractionInput(){
+      const parsed = parseFraction(fractionInput.value);
+      updateFractionStatus(parsed);
+      if (parsed.valid){
+        currentSixteenths = parsed.sixteenths;
+        if (!syncing){
+          renderForward();
+        }
+      }
+    }
+
+    function handleSignToggle(){
+      const neg = !currentSign();
+      setSign(neg);
+      renderForward();
+    }
+
+    function handleNormalize(){
+      const gathered = gatherForwardInputs();
+      const normalized = normalizeAbs(gathered.feet, gathered.inches, gathered.sixteenths);
+      feetInput.value = normalized.feet || '';
+      inchesInput.value = normalized.inches || '';
+      currentSixteenths = normalized.sixteenths;
+      if (currentSixteenths){
+        const g = gcd(currentSixteenths, 16);
+        fractionInput.value = `${currentSixteenths / g}/${16 / g}`;
+        updateFractionStatus({ valid: true, raw: `${currentSixteenths}/16`, reduced: `${currentSixteenths / g}/${16 / g}` });
+      } else {
+        fractionInput.value = '';
+        updateFractionStatus({ valid: true, raw: '0/16', reduced: '0/1' });
+      }
+      toast('Inputs normalized');
+      renderForward();
+    }
+
+    function handleReset(){
+      feetInput.value = '';
+      inchesInput.value = '';
+      fractionInput.value = '';
+      updateFractionStatus({ valid: true, raw: '0/16', reduced: '0/1' });
+      currentSixteenths = 0;
+      setSign(false);
+      decimalsInput.value = '3';
+      archStringInput.value = '';
+      archStringStatus.textContent = 'Enter a field reading to auto-populate the component fields.';
+      decimalOutput.textContent = '—';
+      decimalFeetDisplay.textContent = '—';
+      decimalFeetRaw.textContent = '';
+      normalizedArch.textContent = '—';
+      normalizedArchDetail.textContent = '';
+      totalInchesDisplay.textContent = '—';
+      totalInchesDetail.textContent = '';
+      if (!syncing){
+        syncing = true;
+        decimalFeetInput.value = '';
+        architecturalOutput.textContent = '—';
+        reverseArch.textContent = '—';
+        reverseArchDetail.textContent = '';
+        reverseFraction.textContent = '—';
+        reverseFractionDetail.textContent = '';
+        reverseSixteenths.textContent = '—';
+        reverseSixteenthsDetail.textContent = '';
+        syncing = false;
+      }
+    }
+
+    function handleArchitecturalString(){
+      const raw = archStringInput.value;
+      if (!raw){
+        archStringStatus.textContent = 'Enter a field reading to auto-populate the component fields.';
+        archStringStatus.classList.remove('error');
+        return;
+      }
+      const parsed = parseArchitecturalString(raw);
+      if (!parsed){
+        archStringStatus.textContent = 'Unable to parse entry. Use a format similar to 4\' 8 1/2" or -2 ft 11.75 in.';
+        archStringStatus.classList.add('error');
+        return;
+      }
+      archStringStatus.textContent = 'Architectural string parsed successfully.';
+      archStringStatus.classList.remove('error');
+      setSign(parsed.negative);
+      feetInput.value = parsed.feet;
+      inchesInput.value = parsed.inches;
+      currentSixteenths = parsed.sixteenths;
+      if (parsed.sixteenths){
+        const g = gcd(parsed.sixteenths, 16);
+        fractionInput.value = `${parsed.sixteenths / g}/${16 / g}`;
+        updateFractionStatus({ valid: true, raw: `${parsed.sixteenths}/16`, reduced: `${parsed.sixteenths / g}/${16 / g}` });
+      } else {
+        fractionInput.value = '';
+        updateFractionStatus({ valid: true, raw: '0/16', reduced: '0/1' });
+      }
+      renderForward();
+    }
+
+    function init(){
+      setSign(false);
+      updateFractionStatus({ valid: true, raw: '0/16', reduced: '0/1' });
+
+      [feetInput, inchesInput, decimalsInput].forEach(el => {
+        el.addEventListener('input', () => {
+          if (!syncing){
+            renderForward();
+          }
+        });
+      });
+
+      fractionInput.addEventListener('input', handleFractionInput);
+      signToggle.addEventListener('click', handleSignToggle);
+      archStringInput.addEventListener('change', handleArchitecturalString);
+
+      convertForwardBtn.addEventListener('click', renderForward);
+      normalizeBtn.addEventListener('click', handleNormalize);
+      resetForwardBtn.addEventListener('click', handleReset);
+      copyForwardBtn.addEventListener('click', () => {
+        if (decimalOutput.textContent && decimalOutput.textContent !== '—'){
+          copyToClipboard(decimalOutput.textContent.replace(/ ft$/, ''));
+        }
+      });
+
+      decimalFeetInput.addEventListener('input', () => {
+        if (!syncing){
+          renderReverse();
+        }
+      });
+      fractionStyleSelect.addEventListener('change', () => {
+        renderReverse();
+      });
+      convertReverseBtn.addEventListener('click', renderReverse);
+      copyReverseBtn.addEventListener('click', () => {
+        if (architecturalOutput.textContent && architecturalOutput.textContent !== '—'){
+          copyToClipboard(architecturalOutput.textContent);
+        }
+      });
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter'){
+          const active = document.activeElement;
+          if (active && (active === decimalFeetInput || active === fractionStyleSelect)){
+            renderReverse();
+          } else if (active && (active === feetInput || active === inchesInput || active === fractionInput || active === decimalsInput || active === archStringInput)){
+            if (active === archStringInput){
+              handleArchitecturalString();
+            }
+            renderForward();
+          }
+        }
+      });
+
+      renderForward();
+    }
+
+    init();
+  </script>
+</body>
+</html>

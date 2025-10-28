@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Architectural Feet ↔ Decimal Feet Toolkit (1/16")</title>
+  <style>
+    :root {
+      --bg: #0b0f14;
+      --card: #111821;
+      --ink: #e6edf3;
+      --muted: #9fb0c0;
+      --accent: #2dd4bf;
+      --border: #1f2a36;
+      --warn: #f59e0b;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+      background: linear-gradient(180deg, #0b0f14 0%, #0e131a 60%, #0b0f14 100%);
+      color: var(--ink);
+      line-height: 1.5;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 24px auto;
+      padding: 24px;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    h1 {
+      margin: 0;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+      font-size: clamp(22px, 3vw, 30px);
+    }
+    .subtitle { color: var(--muted); font-size: 14px; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 18px;
+    }
+    .card {
+      grid-column: span 12;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+    }
+    @media (min-width: 900px){
+      .card.half { grid-column: span 6; }
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0 0 12px 0;
+      font-size: 18px;
+      font-weight: 700;
+    }
+    .pill { color: #071218; background: var(--accent); padding: 2px 8px; border-radius: 999px; font-weight: 800; font-size: 12px; }
+
+    .row { display: grid; grid-template-columns: repeat(12, 1fr); gap: 12px; align-items: end; }
+
+    label { font-size: 12px; color: var(--muted); display: block; margin-bottom: 6px; }
+
+    input[type="number"], input[type="text"], select {
+      width: 100%;
+      background: #0b1118;
+      color: var(--ink);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 16px;
+    }
+    input::placeholder { color: #6b7a89; }
+
+    .btn {
+      background: var(--accent);
+      color: #061016;
+      font-weight: 800;
+      border: none;
+      border-radius: 12px;
+      padding: 10px 14px;
+      cursor: pointer;
+      transition: transform 0.04s ease, filter 0.2s ease;
+    }
+    .btn:active { transform: translateY(1px); }
+    .btn.secondary { background: #233142; color: var(--ink); }
+    .btn.ghost { background: transparent; border: 1px solid var(--border); color: var(--ink); }
+
+    .out {
+      background: #0b1118;
+      border: 1px dashed var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 16px;
+      display: grid;
+      gap: 6px;
+    }
+
+    .stack { display: flex; gap: 10px; flex-wrap: wrap; }
+    .muted { color: var(--muted); font-size: 13px; }
+    .sep { height: 1px; background: var(--border); margin: 14px 0; }
+    .sep.small { margin: 10px 0; opacity: 0.5; }
+    .note { font-size: 12px; color: var(--muted); }
+
+    .kpi { display: inline-flex; align-items: center; gap: 8px; padding: 6px 10px; border: 1px solid var(--border); border-radius: 10px; background: #0a1219; }
+    .kpi b { color: var(--accent); }
+
+    .warning { color: var(--warn); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <h1>Architectural Feet ↔ Decimal Feet Toolkit <span class="pill">1/16" fidelity</span></h1>
+        <div class="subtitle">Designed for field engineers and survey teams. Parse architectural strings, normalize runs, and report engineering-ready decimal feet.</div>
+      </div>
+      <div class="kpi" title="Resolution">
+        <span>Resolution:</span> <b>1/16 in</b>
+      </div>
+    </header>
+
+    <div class="grid">
+      <!-- Architectural string parser -->
+      <section class="card" aria-labelledby="archh">
+        <h2 id="archh" class="section-title">Architectural Input Parser</h2>
+
+        <div class="row" style="margin-bottom:10px;">
+          <div style="grid-column: span 9;">
+            <label for="arch_input">Architectural measurement</label>
+            <input id="arch_input" type="text" placeholder="e.g. 4' 8 1/2&quot; or -2'-3 3/4&quot;" spellcheck="false" autocomplete="off" />
+          </div>
+          <div style="grid-column: span 3; display:flex; align-items:end;">
+            <button class="btn" id="btn_arch_convert">Parse &amp; convert</button>
+          </div>
+        </div>
+
+        <div class="out" id="out_arch" role="status" aria-live="polite">—</div>
+        <div class="stack" style="margin-top:10px;">
+          <button class="btn ghost" id="copy_arch">Copy architectural</button>
+          <span class="note">Accepts feet/inch marks, hyphenation, Unicode quotes, fractions (e.g., 5'-11 7/16"), and decimal feet.</span>
+        </div>
+      </section>
+
+      <!-- Feet & Inches -> Decimal Feet -->
+      <section class="card half" aria-labelledby="s1h">
+        <h2 id="s1h" class="section-title">Ⅰ. Feet &amp; Inches → Decimal Feet</h2>
+
+        <div class="row" style="margin-bottom:10px;">
+          <div style="grid-column: span 3;">
+            <label for="f_feet">Feet</label>
+            <input id="f_feet" type="number" step="1" inputmode="numeric" placeholder="e.g. 12" />
+          </div>
+          <div style="grid-column: span 3;">
+            <label for="f_inches">Inches (0–11)</label>
+            <input id="f_inches" type="number" min="0" step="1" inputmode="numeric" placeholder="e.g. 7" />
+          </div>
+          <div style="grid-column: span 3;">
+            <label for="f_frac">Sixteenths (0–15)</label>
+            <input id="f_frac" type="number" min="0" max="15" step="1" inputmode="numeric" placeholder="e.g. 8 for 1/2" />
+          </div>
+          <div style="grid-column: span 3; display:flex; gap:10px; align-items:end;">
+            <div>
+              <label for="neg1">Sign</label>
+              <button id="neg1" class="btn ghost" type="button" aria-pressed="false" title="Toggle negative">+ (positive)</button>
+            </div>
+            <div>
+              <label for="decimals">Decimal places</label>
+              <input id="decimals" type="number" min="2" max="6" step="1" value="3" />
+            </div>
+          </div>
+        </div>
+
+        <div class="stack" style="margin-bottom:10px;">
+          <button class="btn" id="btn_convert_1">Convert</button>
+          <button class="btn secondary" id="btn_norm">Normalize</button>
+          <button class="btn ghost" id="btn_reset_1">Reset</button>
+        </div>
+
+        <div class="out" id="out1" role="status" aria-live="polite">—</div>
+        <div class="stack" style="margin-top:10px;">
+          <button class="btn ghost" id="copy1">Copy decimal feet</button>
+          <span class="note">Formula: decimal_ft = feet + (inches + sixteenths/16) / 12</span>
+        </div>
+        <div class="sep"></div>
+        <div class="note">Tip: Use <strong>Normalize</strong> to auto-carry 16/16 → 1" and 12" → 1'. Example: 5 ft, 14 in, 20/16 → 6 ft, 3 in, 4/16.</div>
+      </section>
+
+      <!-- Decimal Feet -> Feet & Inches -->
+      <section class="card half" aria-labelledby="s2h">
+        <h2 id="s2h" class="section-title">Ⅱ. Decimal Feet → Feet &amp; Inches (nearest 1/16")</h2>
+
+        <div class="row" style="margin-bottom:10px;">
+          <div style="grid-column: span 6;">
+            <label for="dft">Decimal feet</label>
+            <input id="dft" type="number" step="0.0001" inputmode="decimal" placeholder="e.g. 12.5833" />
+          </div>
+          <div style="grid-column: span 3;">
+            <label for="style">Fraction style</label>
+            <select id="style">
+              <option value="reduced" selected>Reduced (e.g., 1/2, 3/8)</option>
+              <option value="sixteenths">Always /16 (e.g., 8/16)</option>
+            </select>
+          </div>
+          <div style="grid-column: span 3; display:flex; align-items:end;">
+            <button class="btn" id="btn_convert_2">Convert</button>
+          </div>
+        </div>
+
+        <div class="out" id="out2" role="status" aria-live="polite">—</div>
+        <div class="stack" style="margin-top:10px;">
+          <button class="btn ghost" id="copy2">Copy architectural</button>
+          <span class="note">Rounding: nearest 1/16" (handles carry: 11 15/16" + 1/16" → next foot).</span>
+        </div>
+
+        <div class="sep"></div>
+        <div class="note">Negatives apply to the entire run (e.g., −1.25 ft → −1' 3"). Decimal feet sync back to the left-hand form.</div>
+      </section>
+
+      <!-- Live sync -->
+      <section class="card" aria-labelledby="s3h">
+        <h2 id="s3h" class="section-title">Field Notes &amp; Operational Guidance</h2>
+        <ul class="note" style="margin:0 0 6px 18px;">
+          <li>Architectural parser normalizes to feet/inches/sixteenths automatically and syncs both calculators.</li>
+          <li>Precision control: choose decimal places (2–6). Default is 3.</li>
+          <li>Keyboard-forward: Tab through fields, press Enter to convert. Copy buttons push to clipboard.</li>
+        </ul>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    // ---------- Utilities ----------
+    const byId = (id) => document.getElementById(id);
+    const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
+    const gcd = (a, b) => { a = Math.abs(a); b = Math.abs(b); while (b) [a,b] = [b, a % b]; return a || 1; };
+
+    function normalizeAbs(feet, inches, sixteenths){
+      // Inputs are expected as ABSOLUTE (non-negative). Returns normalized absolute trio.
+      feet = Math.max(0, Math.trunc(Number(feet) || 0));
+      inches = Math.max(0, Math.trunc(Number(inches) || 0));
+      sixteenths = Math.max(0, Math.trunc(Number(sixteenths) || 0));
+
+      if (sixteenths >= 16){
+        inches += Math.floor(sixteenths / 16);
+        sixteenths = sixteenths % 16;
+      }
+      if (inches >= 12){
+        feet += Math.floor(inches / 12);
+        inches = inches % 12;
+      }
+      return { feet, inches, sixteenths };
+    }
+
+    function toDecimalFeet({feet, inches, sixteenths, negative=false}, decimals=3){
+      const abs = normalizeAbs(Math.abs(feet), Math.abs(inches), Math.abs(sixteenths));
+      const totalSixteenthsOfInch = abs.inches * 16 + abs.sixteenths; // integer math
+      // 12 inches/foot * 16 sixteenths/inch = 192 sixteenths per foot
+      const fracFeet = totalSixteenthsOfInch / 192;
+      const val = abs.feet + fracFeet;
+      const signed = negative ? -val : val;
+      const d = clamp(Math.trunc(decimals || 3), 0, 10);
+      return { value: Number(signed.toFixed(d)), raw: signed };
+    }
+
+    function fromDecimalFeet(decFeet, style='reduced'){
+      // Returns { negative, feet, inches, sixteenths, textCompact, textVerbose, num, den }
+      const negative = (Number(decFeet) || 0) < 0;
+      const abs = Math.abs(Number(decFeet) || 0);
+
+      // Work entirely in sixteenths of an inch to avoid float drift.
+      const feet = Math.floor(abs);
+      const remainderFeet = abs - feet;
+      const totalInches = remainderFeet * 12;
+      let sixteenths = Math.round(totalInches * 16); // nearest 1/16
+
+      // Carry overflows: 16/16 -> +1 inch; 12 inches -> +1 foot
+      let inches = Math.floor(sixteenths / 16);
+      sixteenths = sixteenths % 16;
+
+      let carryFeet = 0;
+      if (inches >= 12){
+        carryFeet = Math.floor(inches / 12);
+        inches = inches % 12;
+      }
+
+      let outFeet = feet + carryFeet;
+
+      // Fraction display
+      let num = sixteenths, den = 16;
+      if (style === 'reduced' && num !== 0){
+        const g = gcd(num, den);
+        num = num / g; den = den / g;
+      }
+
+      const fracStr = sixteenths === 0 ? '' : `${num}/${den}`;
+      const compact = `${negative ? '-' : ''}${outFeet}' ${inches}${fracStr ? '-' + fracStr : ''}\"`;
+      const verbose = `${negative ? '−' : ''}${outFeet} ft, ${inches} in${fracStr ? `, ${fracStr} in` : ''}`;
+
+      return { negative, feet: outFeet, inches, sixteenths, textCompact: compact, textVerbose: verbose, num, den };
+    }
+
+    function parseArchitectural(input){
+      const original = String(input || '').trim();
+      if (!original) return null;
+
+      let s = original;
+      let negative = false;
+      if (/^[\-−]/.test(s)){
+        negative = true;
+        s = s.replace(/^[\-−]/, '').trim();
+      }
+
+      const hasFootMarker = /['′]|ft\b|feet\b|foot\b/i.test(original);
+      const hasInchMarker = /["″]|in\b|inch\b|inches\b/i.test(original);
+
+      if (!hasFootMarker && !hasInchMarker){
+        const cleaned = s.replace(/[^0-9.+-]/g, ' ').trim();
+        const token = cleaned.split(/\s+/).find(Boolean);
+        if (!token) return null;
+        const numeric = Number((negative ? '-' : '') + token.replace(/^[+\-]/, ''));
+        if (!isFinite(numeric)) return null;
+        const repr = fromDecimalFeet(numeric, 'reduced');
+        const absVal = Math.abs(numeric);
+        const baseFeet = Math.floor(absVal);
+        const inchFloat = (absVal - baseFeet) * 12;
+        const baseInches = Math.floor(inchFloat);
+        const baseSixteenths = Math.round((inchFloat - baseInches) * 16);
+        const normalized = normalizeAbs(baseFeet, baseInches, baseSixteenths);
+        return {
+          negative: numeric < 0,
+          feet: normalized.feet,
+          inches: normalized.inches,
+          sixteenths: normalized.sixteenths,
+          decimalFeet: numeric,
+          textCompact: repr.textCompact,
+          textVerbose: repr.textVerbose
+        };
+      }
+
+      s = s
+        .replace(/[′’]/g, "'")
+        .replace(/[″”]/g, '"')
+        .replace(/feet?|ft/gi, "'")
+        .replace(/inches?|inch|in\b/gi, '"')
+        .replace(/-/g, ' ');
+
+      let feetMatch = s.match(/(\d+(?:\.\d+)?)\s*'/);
+      let rawFeet = feetMatch ? Number(feetMatch[1]) : 0;
+      if (feetMatch) s = s.replace(feetMatch[0], ' ');
+
+      const fracMatch = s.match(/(\d+)\s*\/\s*(\d+)/);
+      let fracNum = 0; let fracDen = 1;
+      if (fracMatch){
+        fracNum = Number(fracMatch[1]);
+        fracDen = Number(fracMatch[2]) || 1;
+        s = s.replace(fracMatch[0], ' ');
+      }
+
+      const inchMatch = s.match(/(\d+(?:\.\d+)?)(?=\s*(?:\"|$))/);
+      let rawInches = inchMatch ? Number(inchMatch[1]) : 0;
+      if (inchMatch) s = s.replace(inchMatch[0], ' ');
+
+      // Handle decimal feet fragments by converting to inches
+      let feet = Math.trunc(rawFeet);
+      let inchPool = rawInches + (rawFeet - feet) * 12;
+
+      let inches = Math.trunc(inchPool);
+      let sixteenths = Math.round((inchPool - inches) * 16);
+
+      if (fracNum && fracDen){
+        sixteenths += Math.round((fracNum / fracDen) * 16);
+      }
+
+      const normalized = normalizeAbs(feet, inches, sixteenths);
+      const signedDecimal = (negative ? -1 : 1) * (normalized.feet + (normalized.inches * 16 + normalized.sixteenths) / 192);
+      const repr = fromDecimalFeet(signedDecimal, 'reduced');
+
+      return {
+        negative,
+        feet: normalized.feet,
+        inches: normalized.inches,
+        sixteenths: normalized.sixteenths,
+        decimalFeet: signedDecimal,
+        textCompact: repr.textCompact,
+        textVerbose: repr.textVerbose
+      };
+    }
+
+    async function copy(text){
+      try {
+        await navigator.clipboard.writeText(text);
+        toast('Copied to clipboard');
+      }
+      catch {
+        toast('Copy failed', true);
+      }
+    }
+
+    function toast(msg, warn=false){
+      const el = document.createElement('div');
+      el.textContent = msg;
+      el.style.position = 'fixed';
+      el.style.bottom = '18px';
+      el.style.left = '50%';
+      el.style.transform = 'translateX(-50%)';
+      el.style.background = warn ? '#3b2710' : '#06221f';
+      el.style.color = warn ? '#fbbf24' : '#2dd4bf';
+      el.style.border = '1px solid #1f2a36';
+      el.style.padding = '10px 14px';
+      el.style.borderRadius = '10px';
+      el.style.boxShadow = '0 8px 30px rgba(0,0,0,.25)';
+      el.style.fontWeight = '700';
+      el.style.zIndex = 9999;
+      document.body.appendChild(el);
+      setTimeout(()=>{
+        el.style.opacity = '0';
+        el.style.transition = 'opacity .3s';
+        setTimeout(()=>el.remove(), 300);
+      }, 1200);
+    }
+
+    // ---------- Wire up UI ----------
+    const f_feet = byId('f_feet');
+    const f_inches = byId('f_inches');
+    const f_frac = byId('f_frac');
+    const neg1 = byId('neg1');
+    const decimals = byId('decimals');
+    const out1 = byId('out1');
+    const out2 = byId('out2');
+    const outArch = byId('out_arch');
+
+    out1.dataset.copy = '';
+    out2.dataset.copy = '';
+    outArch.dataset.copy = '';
+
+    const dft = byId('dft');
+    const styleSel = byId('style');
+    const archInput = byId('arch_input');
+
+    function currentSignBtn(btn){ return btn.getAttribute('aria-pressed') === 'true'; }
+    function setSignBtn(btn, neg){ btn.setAttribute('aria-pressed', String(neg)); btn.textContent = neg ? '− (negative)' : '+ (positive)'; }
+
+    setSignBtn(neg1, false);
+
+    function renderEngineeringSummary(decimalFeetValue, dp){
+      const decimalFeet = Number(decimalFeetValue) || 0;
+      const precision = clamp(dp, 0, 10);
+      const decimalFeetRounded = decimalFeet.toFixed(precision);
+      const decimalInches = (decimalFeet * 12).toFixed(precision);
+      const totalSixteenths = Math.round(decimalFeet * 12 * 16);
+      return {
+        decimalFeetRounded,
+        decimalInches,
+        totalSixteenths
+      };
+    }
+
+    function doConvert1(){
+      const negative = currentSignBtn(neg1);
+      const decPlaces = clamp(Math.trunc(Number(decimals.value || 3)), 2, 6);
+      const res = toDecimalFeet({
+        feet: Number(f_feet.value || 0),
+        inches: Number(f_inches.value || 0),
+        sixteenths: Number(f_frac.value || 0),
+        negative
+      }, decPlaces);
+
+      if (!isFinite(res.value)){
+        out1.textContent = '—';
+        out1.dataset.copy = '';
+        return;
+      }
+
+      const summary = renderEngineeringSummary(res.raw, decPlaces);
+      const architectural = fromDecimalFeet(res.raw, 'reduced');
+
+      out1.innerHTML = `
+        <div><strong>Decimal feet:</strong> ${summary.decimalFeetRounded} ft</div>
+        <div class="muted">Raw: ${res.raw}</div>
+        <div class="sep small"></div>
+        <div><strong>Architectural:</strong> ${architectural.textCompact}</div>
+        <div class="muted">${architectural.textVerbose}</div>
+        <div class="sep small"></div>
+        <div class="muted">Decimal inches: ${summary.decimalInches} in</div>
+        <div class="muted">Total sixteenths: ${summary.totalSixteenths}</div>
+      `;
+      out1.dataset.copy = summary.decimalFeetRounded;
+
+      // Sync the other direction view
+      if (isFinite(res.raw)){
+        dft.value = String(res.raw);
+        doConvert2();
+      }
+    }
+
+    function doNormalize(){
+      const abs = normalizeAbs(f_feet.value, f_inches.value, f_frac.value);
+      f_feet.value = String(abs.feet);
+      f_inches.value = String(abs.inches);
+      f_frac.value = String(abs.sixteenths);
+      toast('Inputs normalized');
+      doConvert1();
+    }
+
+    function doConvert2(){
+      const style = styleSel.value;
+      const decVal = Number(dft.value || 0);
+      const res = fromDecimalFeet(decVal, style);
+      if (!isFinite(decVal)){
+        out2.textContent = '—';
+        out2.dataset.copy = '';
+        return;
+      }
+
+      const decPlaces = clamp(Math.trunc(Number(decimals.value || 3)), 2, 6);
+      const summary = renderEngineeringSummary(decVal, decPlaces);
+
+      out2.innerHTML = `
+        <div><strong>Architectural:</strong> ${res.textCompact}</div>
+        <div class="muted">${res.textVerbose}</div>
+        <div class="sep small"></div>
+        <div><strong>Decimal feet:</strong> ${summary.decimalFeetRounded} ft</div>
+        <div class="muted">Decimal inches: ${summary.decimalInches} in</div>
+        <div class="muted">Fractional component: ${res.sixteenths ? `${res.num}/${res.den}` : '—'}</div>
+      `;
+      out2.dataset.copy = res.textCompact;
+
+      // Sync left side fields (absolute, losing sign into button)
+      const sync = normalizeAbs(res.feet, res.inches, res.sixteenths);
+      f_feet.value = String(sync.feet);
+      f_inches.value = String(sync.inches);
+      f_frac.value = String(sync.sixteenths);
+      setSignBtn(neg1, res.negative);
+    }
+
+    function handleArchitecturalParse(){
+      const parsed = parseArchitectural(archInput.value);
+      if (!parsed){
+        outArch.innerHTML = '<span class="warning">Unable to interpret architectural string.</span>';
+        outArch.dataset.copy = '';
+        toast('Parse failed – check format', true);
+        return;
+      }
+
+      f_feet.value = String(parsed.feet);
+      f_inches.value = String(parsed.inches);
+      f_frac.value = String(parsed.sixteenths);
+      setSignBtn(neg1, parsed.negative);
+      dft.value = String(parsed.decimalFeet);
+
+      outArch.innerHTML = `
+        <div><strong>Normalized:</strong> ${parsed.textCompact}</div>
+        <div class="muted">${parsed.textVerbose}</div>
+        <div class="sep small"></div>
+        <div class="muted">Decimal feet: ${parsed.decimalFeet.toFixed(6)}</div>
+      `;
+      outArch.dataset.copy = parsed.textCompact;
+
+      doConvert1();
+    }
+
+    // Buttons
+    byId('btn_convert_1').addEventListener('click', doConvert1);
+    byId('btn_norm').addEventListener('click', doNormalize);
+    byId('btn_reset_1').addEventListener('click', () =>{
+      f_feet.value = '';
+      f_inches.value = '';
+      f_frac.value = '';
+      setSignBtn(neg1, false);
+      decimals.value = '3';
+      out1.textContent = '—';
+      out1.dataset.copy = '';
+      dft.value = '';
+      out2.textContent = '—';
+      out2.dataset.copy = '';
+    });
+    neg1.addEventListener('click', () =>{ setSignBtn(neg1, !currentSignBtn(neg1)); doConvert1(); });
+
+    byId('btn_convert_2').addEventListener('click', doConvert2);
+
+    byId('btn_arch_convert').addEventListener('click', handleArchitecturalParse);
+
+    // Copy
+    byId('copy1').addEventListener('click', () => copy(out1.dataset.copy || out1.textContent.replace(/ ft$/, '')));
+    byId('copy2').addEventListener('click', () => copy(out2.dataset.copy || out2.textContent));
+    byId('copy_arch').addEventListener('click', () => copy(outArch.dataset.copy || archInput.value));
+
+    // Live updates
+    [f_feet, f_inches, f_frac, decimals].forEach(el => el.addEventListener('input', doConvert1));
+    [dft, styleSel].forEach(el => el.addEventListener('input', doConvert2));
+    archInput.addEventListener('input', () =>{
+      outArch.innerHTML = '—';
+      outArch.dataset.copy = '';
+    });
+
+    // Enter triggers the nearest action
+    document.addEventListener('keydown', (e)=>{
+      if (e.key === 'Enter'){
+        const active = document.activeElement;
+        if (active && (active.id.startsWith('f_') || active.id === 'decimals')) doConvert1();
+        else if (active && (active.id === 'dft' || active.id === 'style')) doConvert2();
+        else if (active && active.id === 'arch_input') handleArchitecturalParse();
+      }
+    });
+
+    // Smoke tests (console)
+    (function tests(){
+      const t1 = toDecimalFeet({feet:3, inches:6, sixteenths:8}); // 3' 6-1/2"
+      console.log('Test A (3\' 6-1/2") ≈ 3.5417 →', t1.raw);
+      const r1 = fromDecimalFeet(12.345, 'reduced');
+      console.log('Test B (12.345 ft) →', r1.textCompact);
+      const r2 = fromDecimalFeet(-1.25, 'sixteenths');
+      console.log('Test C (-1.25 ft) →', r2.textCompact);
+      const p1 = parseArchitectural("4' 8 1/2\"");
+      console.log('Test D parse →', p1);
+    })();
+  </script>
+</body>
+</html>
